@@ -1,0 +1,42 @@
+<!-- quiz1 문자열로 다루기 -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+    <!-- 아이템 입력 및 추가 -->
+    <h1>아이템 추가</h1>
+    <input id="myInput" type = "text">
+    <button onclick="add('myInput')">추가</button>
+
+    <!-- 투두 리스트  -->
+    <h1>To Do List</h1>
+    <ul id="myList">
+        <!--이곳에 추가-->
+    </ul>
+
+    <script>
+        function add(id) {
+            // 참조 - 아이템 읽어올 대상
+            const myInput = document.getElementById(id);
+            const item = myInput.value;
+
+            // 참조 - 아이템 넣어줄 대상
+            const myList = document.getElementById("myList");
+
+            // 추가
+            myList.innerHTML += "<li onclick=" + "remove(this)" + ">" + item + "</li>";
+        }
+
+        function remove(item) {
+            // 참조, 삭제 
+            alert(item.innerText + " 를 삭제합니다.");
+            item.remove();
+
+        }
+
+    </script>
+</body>
+</html>

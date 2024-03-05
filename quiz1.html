@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>To do List</h1>
+    <!-- 목록 입력 -->
+    <div>
+        <input id="myInput" type = "text">
+        <button onclick="push('myInput')">입력</button>
+    </div>
+
+    <!-- To Do 리스트 -->    
+    <ul id="myToDoList">
+    </ul>
+
+    <script>
+        // 목록 추가
+        function push(id) {
+            // 사용자가 입력한 값 가져옴 
+            const toDo = document.getElementById(id).value;
+
+            // 태그 참조 
+            const myToDoList = document.getElementById("myToDoList");
+
+            // 행 추가 
+            myToDoList.innerHTML += "<li onclick=remove(this)>" + toDo + "</li>";
+        }
+
+        // 선택한 행 삭제 
+        function remove(e) {
+            // 삭제 
+            e.remove();
+        }
+    </script>
+</body>
+</html>

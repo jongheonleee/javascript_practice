@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #myTable {
+            border : 7.5px solid;
+            border-radius: 5px;
+            border-color : yellowgreen;
+            display: inline-block;
+        }
+
+        #myTextArea {
+            width: 50%;
+            height: 14.5em;
+            resize: none;
+            background-color: yellowgreen;
+        }
+        
+        .myItems {
+            font-size:  20px;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <table id="myTable">
+            <thead>
+                <tr>
+                    <td style="font-size: 30px; "> 아이템 </td>
+                </tr>
+            </thead>
+
+            <tbody id="myTableBody">
+                <tr>
+                    <td><input id="전체" class="myItems" value = "전체" type="checkbox" onclick="workAll(this)">전체</td>
+                </tr>
+                <tr>
+                    <td><input id="야구" class="myItems" value = "야구" type="checkbox" onclick="work(this)">야구</td>
+                </tr>
+                <tr>
+                    <td><input id="농구" class="myItems" value = "농구"  type="checkbox" onclick="work(this)">농구</td>
+                </tr>
+                <tr>
+                    <td><input id="축구" class="myItems" value = "축구"  type = "checkbox" onclick="work(this)">축구</td>
+                </tr>
+                <tr>
+                    <td><input id="배구" class="myItems"  value = "배구"  type = "checkbox" onclick="work(this)">배구</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <textarea id="myTextArea">
+        
+        </textarea>
+    </div>
+    <script>
+        const items = [];
+        
+        function print() {
+            const myTextArea = document.getElementById("myTextArea");
+            let tmp = "";
+
+            for (item of items) {
+                tmp += item + " ,";
+            }
+
+            myTextArea.innerHTML = tmp;
+        }
+
+        function workAll(e) {
+            checkAll(e.checked);            
+            print();
+        }
+
+        function work(e) {
+            check(e.checked);
+            print();
+        }
+
+        function check(mark) {
+            
+        }
+
+        function checkAll(mark) {
+            for (item of myItmes) {
+                if (item.value === "전체") continue;
+                item.checked = mark;
+
+                if (item.checked) {
+                    items.push(item.valeu);
+                } else {
+                    items.pop(item.value);
+                }
+            }
+        }
+
+        
+    </script>   
+</body>
+</html>

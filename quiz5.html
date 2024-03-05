@@ -1,0 +1,308 @@
+<!--
+    1. 설계대로 코딩하다 보면 더 추상화 할 수 있을 때는 어떻게해야하는가?
+    2. 설계대로 코딩하다가 더 좋은 생각이 나면 어떻게 해야하는가?
+    3. 설계대로 코딩하다가 반복되는 코드가 보이면 어떻게 해야하는가?
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #myApp {
+            justify-content: center;
+            align-items: center;
+            display: flex;
+        }
+        #btnArea {
+            margin: 0 auto;
+        }
+        #greedyBtn {
+            border: 3px solid red;
+            background-color: red;
+            border-radius: 10px;
+        }
+        .area {
+            float : left;
+            display : inline;
+        }
+
+        .textArea {
+            width: 20em;
+            height: 20em;
+        }
+        .btn {
+            border: 3px solid yellowgreen;
+            background-color: green;
+            border-radius: 10px;
+        }
+        .title {
+            text-align: center;
+        }
+        .addBtnArea {       
+            margin-left : 4em;
+            position: relative;     
+            display: inline;
+        }
+        body {
+            background-image: url("img/greedy2.png");
+        }
+        option {
+            font-style: italic;
+            font-size: 20px;
+            margin-top: 18px;
+            margin-bottom: 18px;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <h1 class="title">정석코딩 Quiz3</h1>
+
+
+    <h2 class="title">음식 추가하기 😋</h2>
+
+    <div class="addBtnArea">
+        <input id = "leftInput" type="text">
+        <button class="btn" value="하늘" onclick="add('leftInput')">짱구에게 음식 추가</button>
+    </div>
+
+    <div class="addBtnArea">
+        <input id = "rightInput" type="text">
+        <button class="btn" value ="여늘" onclick="add('rightInput')">여늘에게 음식 추가</button>
+    </div>
+    
+    <br>
+    <h2 class="title">음식 테이블 현황 🍽️</h2>
+    <!-- 3분할 -->
+    <div id="myApp"축구>
+        <!-- 1. 선택지 옵션 -->
+        <div class = "area">
+            <h1 class="title">짱구 🙋🏻‍♂️</h1>
+            <select id= "leftArea" class = "textArea" multiple>
+                <option value="🥓" class="item" onclick="select(this)">🥓</option>
+                <option value="🍗" class="item" onclick="select(this)">🍗</option>
+                <option value="🍖" class="item" onclick="select(this)">🍖</option>
+                <option value="🍕" class="item" onclick="select(this)">🍕</option>
+            </select>
+        </div>
+
+
+        <!-- 2. 변형 버튼 -->
+        <div id = "btnArea" class = "area">
+            <butoon style="display: block;" value="moveRight" onclick="moveSelected('right')" class="btn">></butoon>
+            <br>
+            <butoon style="display: block;" value="moveLeft" onclick="moveSelected('left')" class="btn"><</butoon>
+            <br>
+            <butoon style="display: block;" onclick="moveAll('right')" class="btn">>></butoon>
+            <br>
+            <butoon style="display: block;" onclick="moveAll('left')" class="btn"><<</butoon>
+        </div>
+
+        <!-- 3. 영역에 띄워주기 -->
+        <div class = "area">
+            <h1 class="title">여늘 🙋🏻</h1>
+            <select id= "rightArea" class="textArea" multiple>
+                
+            </select>
+        </div>
+    </div>
+
+    <h2 class="title">욕심쟁이는?!</h2>
+        <!-- 아이템 입력 -->
+        <div class="title">
+            <button id="greedyBtn" onclick="getGreedy()">출력</button>
+        </div>
+    <script>
+        // 선택된 아이템 담기
+        let selectedItems = [];
+
+        // 3가지 기능 - 선택, 옮김, 출력 
+            // 1. 선택 ✅
+        function select(e) {
+            // 선택한 것들 배열에 담아주기
+            selectedItems.push(e.value);
+        }
+
+            // 2. 선택한 것들만 옮김
+                // 2-1. 선택한 것들을 왼쪽 -> 오른쪽 
+
+                // 2-2. 선택한 것들을 오른쪽 -> 왼쪽 
+        function moveSelected(direction) {
+            // 왼쪽에서 오른쪽 눌린 경우
+            if (direction === "right") {
+                moveSelectedLeftToRight();
+            }
+            // 오른쪽에서 왼쪽 눌린 경우
+            else if (direction === "left") {
+                moveSelectedRightToLeft();
+            }
+        }
+
+        function moveSelectedLeftToRight() {
+            // 1. 왼쪽 영역, 오른쪽 영역 참조
+            const leftAreaNodes = document.getElementById("leftArea").childNodes;
+
+            let rightInnerHTML = "";
+            let leftInnerHTML = "";
+            
+            // 2. 선택한 애들만 옮김 (왼쪽 -> 오른쪽)
+            for (node of leftAreaNodes) {
+                if (typeof node.value === "undefined") {
+                    continue;
+                }
+                const target = node.value;
+                if (selectedItems.indexOf(target) === -1) {
+                    leftInnerHTML += `<option value=${target} class ='item' onclick="select(this)">${target}</option>`;
+                } else if (selectedItems.indexOf(target) !== -1) {
+                    rightInnerHTML += `<option value=${target} class = 'item' onclick="select(this)">${target}</option>`;
+                }
+            }
+
+            // 3. 업데이트 
+            update(leftInnerHTML, rightInnerHTML, "right");
+        }
+
+        function moveSelectedRightToLeft() {
+            // 1. 왼쪽 영역, 오른쪽 영역 참조
+            const rightAreaNodes = document.getElementById("rightArea").childNodes;
+
+            let rightInnerHTML = "";
+            let leftInnerHTML = "";
+            // 2. 선택한 애들만 옮김 (오른쪽 -> 왼쪽)
+            for (node of rightAreaNodes) {
+                if (typeof node.value === "undefined" ) continue;
+    
+                const target = node.value;
+                if (selectedItems.indexOf(target) === -1) {
+                    rightInnerHTML += `<option value=${target} class = 'item' onclick="select(this)">${target}</option>`;
+                } else if (selectedItems.indexOf(target) !== -1) {
+                    leftInnerHTML += `<option value=${target} class = 'item' onclick="select(this)">${target}</option>`;
+                }
+            }
+
+            // 3. 업데이트 
+            update(leftInnerHTML, rightInnerHTML, "left");
+        }
+            
+            // 3. 모든 것들을 옮김
+                // 3-1. 모든것들을 왼쪽 -> 오른쪽
+
+                // 3-2. 모든것들을 오른쪽 -> 왼쪽
+        function moveAll(direction) {
+            // 1. 왼쪽 영역, 오른쪽 영역 참조
+
+            // 2. 모든 애들 옮김 
+                // 2-1. 왼쪽 -> 오른쪽
+
+                // 2-2. 오른족 -> 왼쪽
+            if (direction === "right") {
+                moveAllLeftToRight();
+            } else if (direction === "left") {
+                moveAllRightToLeft();
+            }
+        }
+
+        function moveAllLeftToRight() {
+            // 1. 왼족 영역, 오른족 영역 참조
+            const leftAreaNodes = document.getElementById("leftArea").childNodes;
+
+            let rightInnerHTML = "";
+            // 2. 모든 애들 옮김(왼쪽 -> 오른쪽)
+            for (node of leftAreaNodes) {
+                if (typeof node === "undefined" || typeof node.value === "undefined") continue;
+                const target = node.value;
+                rightInnerHTML += `<option value=${target} class = 'item' onclick="select(this)">${target}</option>`;
+            }
+
+            // 3. 업데이트 
+            update("", rightInnerHTML, "right");
+        }
+
+        function moveAllRightToLeft() {
+            // 1. 왼쪽 영역, 오른족 영역 참조
+            const rightAreaNodes = document.getElementById("rightArea").childNodes;
+
+            let leftInnerHTML = "";
+            // 2. 모든 애들 옮김(오른쪽 -> 왼쪽)
+            for (node of rightAreaNodes) {
+                if (typeof node === "undefined" || typeof node.value === "undefined") continue;
+                const target = node.value;
+                leftInnerHTML += `<option value=${target} class = 'item' onclick="select(this)">${target}</option>`;
+            }
+
+            // 3. 업데이트
+            update(leftInnerHTML, "", "left");
+
+        }
+            // 4. 각 영역에 보여주기
+                // 4-1. 왼쪽 것들 출력
+                // 4-2. 오른쪽 것들 출력 
+        function update(leftInnerHTML = "", rightInnerHTML = "", direction) {
+            const leftArea = document.getElementById("leftArea");
+            const rightArea = document.getElementById("rightArea");
+
+            if (direction === "left") {
+                leftArea.innerHTML += leftInnerHTML;
+                rightArea.innerHTML = rightInnerHTML;
+            } else if (direction === "right") {
+                leftArea.innerHTML = leftInnerHTML;
+                rightArea.innerHTML += rightInnerHTML;
+            }
+
+            selectedItems = [];
+        }
+
+        // 사용자가 입력한거 추가
+        function add(direction) {
+            // 왼쪽(하늘)에 추가하는 경우
+            if (direction === "leftInput") {
+                addLeft(direction);
+            }
+            else if (direction === "rightInput") {
+                // 오른족(여늘)에 추가하는 경우
+                addRight(direction);
+            }
+        }
+
+        // 왼쪽(하늘)에 추가
+        function addLeft(direction) {
+            // 1. 참조
+            const leftArea = document.getElementById("leftArea");
+            const target = document.getElementById(direction).value;
+            // const target = document.getElementById(direction).textContent;
+
+            // 2. 추가
+            leftArea.innerHTML +=  `<option value=${target} class = 'item' onclick="select(this)">${target}</option>`;
+        }
+
+        // 오른쪽(여늘)에 추가
+        function addRight(direction) {
+            // 1. 참조
+            const rightArea = document.getElementById("rightArea");
+            const target = document.getElementById(direction).value;
+
+            // 2. 추가
+            rightArea.innerHTML += `<option value=${target} class = 'item' onclick="select(this)">${target}</option>`;
+        }
+
+        // 아이템이 많은 애 alert()로 출력하기
+        function getGreedy() {
+            const leftAreaLength = document.getElementById("leftArea").childNodes.length;
+            const rightAreaLength = document.getElementById("rightArea").childNodes.length;
+
+            if (leftAreaLength > rightAreaLength) {
+                alert("짱구🤷🏻‍♂️가 욕심쟁이군!!");
+            } else if (leftAreaLength < rightAreaLength) {
+                alert("여늘🤷🏻이가 욕심쟁이군!!");
+            } else {
+                alert("뭐야?! 도찐개찐이네");
+            }
+        }
+        
+    </script>
+</body>
+</html>
