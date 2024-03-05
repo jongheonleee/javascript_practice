@@ -1,3 +1,4 @@
+<!-- quiz1 문자열로 다루기 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,120 +6,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 </head>
-<body>
+    <!-- 아이템 입력 및 추가 -->
+    <h1>아이템 추가</h1>
+    <input id="myInput" type = "text">
+    <button onclick="add('myInput')">추가</button>
 
-    <h2>아이템 추가</h2>
-    <div>
-        <input id = "myInput" type="text">
-        <button onclick="add()">추가</button>
-    </div>
-
-    <br>
-    <!-- 선택지 만들어주기 -->
-    <h2>아이템 목록</h2>
-    <div id="myOption">
-    </div>
-
-    <br>
-
-    <!-- 선택한 것들 텍스트 영역에 표시하기 -->
-    <h2>선택된 아이템</h2>
-    <textarea id = "myTextArea">
-        
-    </textarea>
-
+    <!-- 투두 리스트  -->
+    <h1>To Do List</h1>
+    <ul id="myList">
+        <!--이곳에 추가-->
+    </ul>
 
     <script>
-        // 배열 
-        var items = ["전체", "농구", "배구", "축구", "야구"];
+        function add(id) {
+            // 참조 - 아이템 읽어올 대상
+            const myInput = document.getElementById(id);
+            const item = myInput.value;
 
-        window.onload = function() {
-            // 초기 상태 보여줌
-            init();
+            // 참조 - 아이템 넣어줄 대상
+            const myList = document.getElementById("myList");
+
+            // 추가
+            myList.innerHTML += "<li onclick=" + "remove(this)" + ">" + item + "</li>";
         }
 
-        // 초기화작업해주기 
-        function init() {
-            // 태그 참조
-            // 배열 요소 추가하기
-            const myOption = document.getElementById("myOption");
-            for (item of items) {
-                myOption.innerHTML += "<div id = " + item + "><input type = checkbox value = " + item + " onclick = check(this)>" + item + "</div>";
-            }
+        function remove(item) {
+            // 참조, 삭제 
+            alert(item.innerText + " 를 삭제합니다.");
+            item.remove();
 
         }
 
-        // 체크
-        function check(e) {
-            // 전체가 체크된 경우 모두 체크해주기
-            if (e.value == "전체") {
-                allCheck(e.checked);
-            }
-
-            // 텍스트 영역에 출력하기 
-            print();
-        }
-
-
-        // 모두 체크
-        function allCheck(check) {
-            // 배열에 있는 요소들 모두 체크해주기 
-            for (item of items) {
-                if (item === "전체") continue;
-                document.getElementById(item).firstChild.checked = check;
-            }
-        }
-
-
-        // 배열에 저장된 선택지 보여줌
-        function showAllItems() {
-            // 태그 참조 
-            const myOption = document.getElementById("myOption");
-
-            // 내용 초기화 
-            myOption.innerHTML ="";
-
-            // 배열에 있는 요소들 html 내용에 추가 
-            for (item of items) {
-                myOption.innerHTML += "<div id = " + item + "><input type = checkbox value = " + item + " onclick = check(this)>" + item + "</div>";
-            }
-        }
-
-        // 텍스트 영역에 체크된 것들 보여주기
-        function print() {
-            // 참조
-            const myTextArea = document.getElementById("myTextArea");
-            
-            // 초기화 
-            myTextArea.innerHTML = "";
-        
-            // 체크된 것들 보여주기 
-            for (item of items) {
-                if (item === "전체") continue;
-
-                const check = document.getElementById(item).firstChild.checked;
-                if (check) {
-                    myTextArea.innerHTML += item + ", ";
-                }
-            }
-
-            // 마지막 잘라주기
-            myTextArea.innerHTML = myTextArea.innerHTML.substring(0, myTextArea.innerHTML.lastIndexOf(","));
-        }
-
-        // 사용자가 입력한 아이템 배열에 저장하고 화면에 선택지로 추가
-        function add() {
-            // 사용자가 입력한 값 가져옴 
-            const item = document.getElementById("myInput").value;
-
-            // 배열에 넣어주기
-            items.push(item);
-
-            // 리스트 다시 보여주기 
-            showAllItems();
-        }
-
-
-    </script>   
+    </script>
 </body>
 </html>

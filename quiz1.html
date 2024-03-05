@@ -4,37 +4,212 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <style>
+        #myTable {
+            margin-left: auto;
+            margin-right: auto;
+            border : 10px solid;
+            border-collapse: 10px solid;
+            width : 500px;
+            height : 500px;
+        }
+
+        #myBingoBtn {
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        #myScore {
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        #myToDoList {
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        #myToDoListBtn {
+            margin: 0 auto;
+            background-color: green;
+            text-align: center;
+            border-radius: 20px;
+        }
+
+    </style>
+    </style>
 </head>
 <body>
-    <h1>To do List</h1>
-    <!-- 목록 입력 -->
-    <div>
-        <input id="myInput" type = "text">
-        <button onclick="push('myInput')">입력</button>
-    </div>
 
-    <!-- To Do 리스트 -->    
-    <ul id="myToDoList">
+    <!-- to-do list 만들기-->
+    <ul id = "myToDoList">
     </ul>
 
+    <!-- 체크 리스트 -->
+    <div id="myCheckList">
+    </div>
+
+    <!--빙고 게임-->
+    <!-- 점수판 보여주기 -->
+
+    <!-- 빙고판 제작 -->
+    <div style="text-align: center;">
+        <h1>Bingo Game</h1>
+        <h1 id="count"></h1>
+    </div>
+
+    <div style="text-align: center;">
+        <table id = "myTable" border = "10px">
+            <tbody>
+                <tr id="0"></tr>
+                <tr id="1"></tr>
+                <tr id="2"></tr>
+                <tr id="3"></tr>
+                <tr id="4"></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div id = "myBingoBtn">
+        <button id="getResult" style="background-color: yellow; height : 75px; width : 75px; border-radius: 20px;" onclick = getResult(this)>result</button>
+    </div>
+    
+
     <script>
-        // 목록 추가
-        function push(id) {
-            // 사용자가 입력한 값 가져옴 
-            const toDo = document.getElementById(id).value;
+        // (1) 선택 
+        // (2) 작업 (r, w)
+        var count = 10;
+        var maxScore = 0;
+        var toDoList = [];
 
-            // 태그 참조 
-            const myToDoList = document.getElementById("myToDoList");
+        window.onload = function() {
 
-            // 행 추가 
-            myToDoList.innerHTML += "<li onclick=remove(this)>" + toDo + "</li>";
+            // 1. 빙고 게임판 업로드
+            const arr = [];
+            // 배열 생성
+            for (i=0; i<5; i++) {
+                arr[i] = new Array(5);
+            }
+            // 숫자 채움
+            for (i=0; i<25; i++) {
+                arr[Math.floor(i/5)][i%5] = i+1;
+            }
+            // 셔플
+            arr.sort(() => Math.random() - 0.5);
+
+            // 빙고판 제작
+            for (i=0; i<5; i++) {
+                var row = document.getElementById(i+"");
+                for (j=0; j<5; j++) {
+                    row.innerHTML += "<td id = '("+i+"," + j+")' onclick = 'pop(this)'>" + arr[i][j] + "</td>";
+                }
+            }
+
+            document.getElementById("count").innerText = count;
+            document.getElementById("myScore").innerHTML = "<h1>" + "Best Score : " + maxScore + "</h1>";
+        
+            // 2. to-do List 업로드
+            toDoList = ["저녁먹기", "잠자기", "유튜브시청", "복습"];
+
+            for (i=0; i<toDoList.length; i++) {
+                document.getElementById("myToDoList").innerHTML += "<li>" + myToDoList[i] + "</li>";
+            }
+
         }
 
-        // 선택한 행 삭제 
-        function remove(e) {
-            // 삭제 
-            e.remove();
+        function pop(e) {
+            if (count > 0) {
+                e.innerText = "pop";
+                e.style.backgroundColor = "red";
+                count--;
+                document.getElementById("count").innerText = count;
+                alert("총 남은 횟수는 " + count + "입니다");
+            }
+        } 
+
+        function getResult(e) {
+            var bingoCount = 0; // 총 빙고 카운트 
+            var line1 = 0; // 가로줄
+            var line2 = 0; // 세로줄
+            var dia1 = 0; // 대각선1
+            var dia2 = 0; // 대각선2
+
+            // 가로줄
+            for (i=0; i<5; i++) {
+                mark = true;
+                for (j=0; j<5; j++) {
+                    if(document.getElementById("("+i+"," + j+")").innerHTML != "pop") {
+                        mark = false;
+                    }
+                }
+                if (mark == true) {
+                    line1 += 1;
+                }
+            }
+
+            // 세로줄
+            for (j=0; j<5; j++) {
+                mark = true;
+                for (i=0; i<5; i++) {
+                    if (document.getElementById("("+i+"," + j+")").innerHTML != "pop") {
+                        mark = false;
+                    }
+                }
+
+                if (mark ==  true) {
+                    line2 += 1;
+                }
+            }
+
+            // 대각선1
+            mark = true;
+            for (i=0; i<5; i++) {
+                if (document.getElementById("("+i+"," + i+")").innerHTML != "pop") {
+                    mark = false;
+                }
+            }
+
+            if (mark == true) {
+                dia1 += 1;
+            }
+
+            // 대각선2
+            mark = true;
+            for (i=0; i<5; i++) {
+                if (document.getElementById("("+i+"," + (4-i)+")").innerHTML != "pop") {
+                    mark = false;
+                }
+            }
+
+            if (mark == true) {
+                dia2 += 1;
+            }
+
+            bingoCount = line1 + line2 + dia1 + dia2;
+            alert("총 빙고 수는 " + bingoCount + " 입니다.");
+
+            // 최고 기록 갱신 
+            if (maxScore < bingoCount) {
+                maxScore = bingoCount;
+                document.getElementById("myScore").innerHTML = "<h1>" + "Best Score : " + maxScore + "</h1>";
+            }    
         }
+
+        function showAllList(e) {
+            // 1. 참조
+
+            // 2. 작업
+                // 2-1. 리스트화
+            e.innerHTML += "<ul>";
+            for (i=0; i<toDoList.length; i++) {
+                e.innerHTML += "<li>" + toDoList[i] + "</li>";
+            }
+            e.innerHTML += "</ul>";
+            // 3. 업데이트
+        }
+
+        // 리스트 초기에 만들어주는 함수
+        // 배열에 있는 거 뿌려주기
     </script>
 </body>
 </html>
