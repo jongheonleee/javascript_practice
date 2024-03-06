@@ -1,0 +1,402 @@
+<!--카드 게임-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        img {
+            margin-top: 7px;
+            margin-bottom: 7px;
+            margin-left: 3px;
+            margin-right: 3px;
+            width: 6em;
+            height: 8em;
+        }
+
+        #gameArea {
+            text-align: center;
+        }
+
+        #btnArea {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div id="gameArea">
+        <!-- 카드를 놓는 영역(cardArea) -->
+        <div id="cardArea">
+            <!-- 모든 카드 나열 -->
+            <!-- 10개 나열하고 줄바꿈-->
+            <!-- 뒤집은 경우 : <img src="img/card_img/back.png">-->
+        </div>
+    </div>
+    <!-- 버튼 누르는 영역(btnArea) -->
+    <div id="btnArea">
+        <!-- 버튼 나열 -->
+        <button id="hide" onclick="allCardsHide()">
+            뒤집기
+        </button>
+
+        <button id="show" onclick="allCardsShow()">
+            보이기 
+        </button>
+
+        <button id="suffle" onclick="allCardsShuffle()">
+            섞기
+        </button>
+
+        <button id="play" onclick="gamePlay()">
+            게임 시작 
+        </button>
+    </div>
+    <script>
+        // 설계
+            // 1. 게임 시작
+                // 카드 객체 생성
+                // 배열에 담기
+                // 섞기
+
+                // 플레이어 2명 생성
+                // 배열에 담기
+
+                // 각 플레이어마다 게임 돌리기 
+
+            // 2. 카드 객체 생성
+                // 카드 객체 iv -> originalNumber, state
+                    // originalNumber : 원래 숫자 
+                    // number : 숫자
+                    // shape : 문양
+                    // state : 상태
+                    // color : 색깔 
+
+                // 카드 객체 im -> isFront(), isSameNumberAndColor(), getOriginalNumber()
+                    // isFront() : 상태가 앞면인지 확인
+
+                    // isSameNumberAndColor() :  0, 1, 2
+                        // isSameNumber() : 숫자 비교 -> 0, 1
+                        // isSameColor() : 색깔 비교 -> 0, 1
+
+                    // getOriginalNumber() : 기존의 숫자 반환
+                        // number + shapes.indexof(shape) 값 
+
+                // 0~52까지 카드 객체 생성하면서 카드 배열에 저장
+
+                
+
+            // 3. 플레이어 객체 생성
+                // 플레이어 객체 iv -> name, score, leftCount
+                    // name : 이름
+                    // score : 점수
+                    // leftCount : 남은 횟수(기본 15번)
+
+                // 플레이어 객체 im -> isWinner()
+                    // isWinner() : 상대편과 나의 점수 비교, true/false
+
+
+            // 4. 선택한 카드 보여줌
+                // 선택한 카드가 앞면인지 확인 card.isFront();
+                    // 앞면이면 넘어감
+
+                // 뒷면인 경우, 앞먄으로 뒤집기 cardFilp()
+
+            // 5. 카드 섞기 cardShuffle()
+                // 카드배열 섞기 cards.sort((e) => Math.random() - 0.5);
+
+
+            // 7. 카드 뒤집기
+                // 카드 객체 정보 업데이트
+                    // card.state = "front";
+                    
+                // 업데이트
+                    // 해당 객체가 가르키는 요소 업데이트
+                        // state 속성 card.state
+                        // back.jpg -> card.getOriginalNumber();
+
+            // 8. 서로 같은 카드인지 확인
+                // 선택한 카드가 저장된 배열 참조
+                    // 선택된 카드끼리 비교한 뒤 점수 계산 
+                        // selectedCard[0].isSameNumberAndColor(selectedCard[1]) -> 0, 1, 2
+                    
+                    // 플레이어의 점수에 추가
+                        // players[0].score += score;
+
+            // 9. 다시 섞기 
+                // 카드 객체 배열 섞기
+                // 다시 cardArea 영역 내부 html 업데이트
+        const originalNumbers = [   
+            0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 
+            10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
+            20, 21, 22, 23, 24, 25, 26, 27, 28, 29,
+            30, 31, 32, 33, 34, 35, 36, 37, 38, 39,
+            40, 41, 42, 43, 44, 45, 46, 47, 48, 49,
+                        50, 51
+        ];
+        const shapes = ["diamond", "clova", "heart", "spade"];
+        const MAX_NUMBER_OF_PLAYER = 2;
+        const selectedCard = [];
+        const cards = [];
+        const players = [];
+        let isSelecreted = false;
+
+        // 2. 카드 객체 생성
+            // 카드 객체 iv -> number, shape, state
+                // originalNumber : 원래 숫자 
+                // state : 상태
+
+            // 카드 객체 im -> isFront(), isSameNumberAndColor(), getOriginalNumber(), getNumber(), getShape(), flip()
+                // isFront() : 상태가 앞면인지 확인
+
+                // isSameNumberAndColor() :  0, 1, 2
+                    // isSameNumber() : 숫자 비교 -> 0, 1
+                    // isSameColor() : 색깔 비교 -> 0, 1
+
+                // getNumber() : 0~12까지 숫자 반환
+                    // originalNumber % 13
+
+                // getShape() : 4가지 문양 중 하나 반환
+                    // shapes[originalNumber / 13]
+
+                // getOriginalNumber() : 기존의 숫자 반환
+                
+                // getColor() : 카드의 색깔 반환
+                    // 13으로 나눴을 때 몫이 짝수면 "red", 아니면 "black"
+
+                // flip() : 카드 상태 뒤집기
+                    
+
+        // 0~52까지 카드 객체 생성하면서 카드 배열에 저장
+
+        function Card(originalNumber = 0, state = "back") {
+            this.originalNumber = originalNumber;
+            this.state = state;
+
+            this.isFront = function() {
+                return this.state === "front" ? true : false;
+            }
+
+            this.getNumber = function() {
+                return this.originalNumber % 13;
+            }
+
+            this.getShape = function() {
+                return this.shapes[Math.floor(this.originalNumber/13)];
+            }
+
+            this.getColor = function() {
+                return Math.floor(this.originalNumber/13)%2 === 0 ? "red" : "black";
+            }
+
+            this.getOriginalNumber = function() {
+                return this.originalNumber;
+            }
+
+            this.isSameNumberAndColor = function(otherNumber, othrColor) {
+                let sameCount = 0;
+                sameCount += (isSameNumber(otherNumber) ? 1 : 0);
+                sameCount += (isSameColor(othrColor) ? 1 : 0);
+
+                return sameCount;
+            }
+
+            this.isSameNumber = function(otherNumber) {
+                return getNumber() === otherNumber ? true : false;
+            }
+
+            this.isSameColor = function(othrColor) {
+                return getColor() === otherColor ? true : false;
+            }
+
+            this.isSameOriginalNumber = function(otherOriginalNumber) {
+                return this.originalNumber === otherOriginalNumber ? true : false;
+            }
+
+            this.flip = function() {
+                this.state = "front";
+            }
+
+            this.getState = function() {
+                return this.state;
+            }
+
+        }
+
+        // 3. 플레이어 객체 생성
+            // 플레이어 객체 iv -> name, score, leftCount
+                // name : 이름
+                // score : 점수
+                // leftCount : 남은 횟수(기본 15번)
+
+            // 플레이어 객체 im -> isWinner(), isLeftCount() 
+                 // isWinner() : 상대편과 나의 점수 비교
+                    // -1 : 짐, 0 : 비김, 1 : 이김 
+                 // isLeftCount() : 현재 남은 게임 횟수 반환, true, false
+
+        function Player(name = "anonymous", score = 0, leftCount = 15) {
+            this.name = name;
+            this.score = score;
+            this.leftCount = leftCount;
+
+            this.isWinner = function(otherPlayerScore) {
+                return this.score > otherPlayerScore ?  1 : (this.score === otherPlayerScore ? 0: -1);
+            }
+
+            this.getName = function() {
+                return this.name;
+            }
+
+            this.isLeftCount =  function() {
+                return this.leftCount > 0 ? true : false;
+            }
+
+            this.increaseScore = function() {
+                this.score++;
+            }    
+
+            this.addScore = function(amount) {
+                this.score += amount;
+            }
+
+            this.getScore = function() {
+                return this.score;
+            }
+
+            this.decreaseCount = function() {
+                if (this.leftCount > 0) {
+                    this.leftCount--;
+                }
+            }
+        }
+
+        // 1. 게임 시작
+            // 섞기
+            // 카드 객체 생성
+            // 배열에 담기
+
+            // 플레이어 2명 생성
+            // 배열에 담기
+
+            // 각 플레이어마다 게임 돌리기 
+        function gameStart() {
+            shuffleOriginalNumber(); // 이미지 숫자 섞기 0
+            for (number of originalNumbers) { // 섞인 순서대로 배열에 객체 생성해서 넣기  0
+                cards.push(new Card(number, "back"));
+            }
+            createAllCardElement(); // 0
+
+            // 최종 결과 출력
+            // alert("게임이 종료되었습니다.");
+            // const winner = players[0].isWinner(players[1].getScore()) === true ? players[0].getName() : players[1].getName();
+            // alert(`최종 우승자는 ${winner} 입니다`);
+        }
+
+        function shuffleOriginalNumber() {
+            for (let i=0; i<100; i++) {
+                originalNumbers.sort(() => Math.random() - 0.5);
+            }
+        }
+
+        function selecteCard(e) { // 0
+            const target = parseInt(e.getAttribute("data-number"));
+
+            // 카드 객체랑 선택된 애랑 같은 숫자 값 반환
+            for (card of cards) {
+                if (card.isSameOriginalNumber(target)) { // 0
+                    selectedCard.push(card); // 0
+                    selectedCardShow(card);
+                    isSelecreted = true;
+                    return;
+                } 
+            }
+        }
+
+        function selectedCardShow(card) { // 0
+            const cardAreaChildren = document.getElementById("cardArea").children;
+            card.flip();
+
+            for (child of cardAreaChildren) {
+                const originalNumber = parseInt(child.getAttribute("data-number"));
+                if (card.isSameOriginalNumber(originalNumber)) {
+                    child.setAttribute("src", `img/card_img/${originalNumber}.png`);
+                }
+            }
+        }
+
+        function allCardShow() {
+            const cardArea = document.getElementById("cardArea");
+            const cardAreaChildren = cardArea.children;
+
+
+            for (child of cardAreaChildren) {
+                child.state = "front";
+                child.setAttribute("src", `img/card_img/${child.value}.png`);
+            }
+        }
+
+        function createAllCardElement() {
+            const cardArea = document.getElementById("cardArea");
+            
+            for (card of cards) {
+                const e = document.createElement("img");
+                if (card.getState() === "front") {
+                    e.setAttribute("src", `img/card_img/${card.getOriginalNumber()}.png`);
+                } else {
+                    e.setAttribute("src", `img/card_img/back.png`);
+                
+                }
+                e.setAttribute("data-number", card.getOriginalNumber());
+                e.setAttribute("onclick", "selecteCard(this)");
+                cardArea.appendChild(e);
+            }
+        }
+
+        function gamePlay() {
+            for (let i=1; i<=2; i++) { // 플레이어 2명 생성해서 배열에 넣기  0
+                players.push(new Player(`player${i}`));
+            }
+
+            for (player of players) { // 0
+                while (player.isLeftCount()) { // 0
+                    // 카운트 다운한다 
+                    if (isSelecreted) {
+                        player.decreaseCount(); // 0
+                        isSelecreted = false;
+                    }
+                }
+            } 
+        }
+
+
+        window.onload = function() {
+            gameStart(); // 0
+        }
+    </script>
+</body>
+</html>
+
+<!-- while (selectedCards.length < 2) {
+    // 사용자가 선택한 카드를 배열에 넣는다
+    while (isSelecreted) { // 나중에 성능 개선해야함 
+        isSelecreted = false;
+    }
+} -->
+
+<!-- // 서로 비교한다
+let sameCount = selecteCard[0].isSameNumberAndColor(selecteCard[1].getNumber, selectedCards[1].getColor);
+player.addScore(sameCount); -->
+
+<!-- for (player of players) { // 0
+    while (player.isLeftCount()) { // 0
+        while (selectedCard.length < 2) {  
+            // 사용자가 선택한 카드를 배열에 넣
+            alert(selecteCard.length);
+        }
+
+        // 카운트 다운한다 
+        player.decreaseCount(); // 0
+    }
+} 
+이거는 다른 곳에 넣어야함 
+-->

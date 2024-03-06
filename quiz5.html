@@ -1,0 +1,211 @@
+<!--카드 게임-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        img {
+            margin-top: 7px;
+            margin-bottom: 7px;
+            margin-left: 3px;
+            margin-right: 3px;
+            width: 6em;
+            height: 8em;
+        }
+        #gameArea {
+            text-align: center;
+        }
+        #btnArea {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div id="gameArea">
+        <!-- 카드를 놓는 영역(cardArea) -->
+        <div id="cardArea">
+            <!-- 모든 카드 나열 -->
+            <!-- 10개 나열하고 줄바꿈-->
+            <!-- 뒤집은 경우 : <img src="img/card_img/back.png">-->
+        </div>
+    </div>
+    <!-- 버튼 누르는 영역(btnArea) -->
+    <div id="btnArea">
+        <!-- 버튼 나열 -->
+        <button id="hide" onclick="allCardsHide()">
+            뒤집기
+        </button>
+
+        <button id="show" onclick="allCardsShow()">
+            보이기 
+        </button>
+
+        <button id="suffle" onclick="allCardsShuffle()">
+            섞기
+        </button>
+    </div>
+    <script>
+        // 설계
+        // 핵심 기능 - 1. 게임 시작, 2. 선택한 카드 보여주기, 3. 카드 섞기, 4. 카드 보여주기, 5. 카드 비교하기, 6. 카드 뒤집기
+        
+            // 1. 게임 시작 gameStart()
+                // 1-1. 섞음 cardShuffle()
+                // 1-2. 보여줌 cardShow()
+
+                
+            // 2. 선택한 카드 보여주기 selectedCardShow()
+                // 2-1. 선택된 카드 
+                    // 2-1-1. 카드가 앞면, 그대로 isCardFront()
+
+                    // 2-1-2. 카드가 뒷면, 앞으로 뒤집기 isCardBack()
+
+
+            // 3. 섞기 cardShuffle()
+
+            // 4. 보이기 cardShow()
+                // 4-1. 모든 카드 보여주기 eachCardShow()
+                // 4-2. 하나의 카드만 보여주기 allCardShow()
+
+            // 5. 비교 isSameCard()
+                // 5-1. 두 카드가 맞으면, 그대로
+                // 5-2. 두 카드가 다르면, 뒤집기 cardHide()
+
+            // 6. 카드 뒤집기 cardHide() 
+
+        const cardMap = new Map();
+        const cardNumbers = [   
+                    0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 
+                    10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
+                    20, 21, 22, 23, 24, 25, 26, 27, 28, 29,
+                    30, 31, 32, 33, 34, 35, 36, 37, 38, 39,
+                    40, 41, 42, 43, 44, 45, 46, 47, 48, 49,
+                                50, 51
+                    ];
+    
+        const cardArea = document.getElementById("cardArea"); // 카드 그려주는 영역 
+        const selectedCards = []; // 선택된 카드 저장 배열 
+
+        window.onload = function() {
+            gameStart();
+        }
+
+
+        // 카드 뒤집기 및 맞추기 애플리케이션 범위 
+            // 1. 게임 시작 ✅
+            function gameStart() {
+                cardShuffle(); // 카드 섞음 ✅
+                cardInfoSave(); // 카드 정보 맵에 저장 ✅
+                createCards(); // 모든 카드 img 요소 생성 ✅
+            }
+
+            // 카드 정보 맵에 저장 ✅
+            function cardInfoSave() {
+                for (number of cardNumbers) {
+                    cardMap.set(number, number%13);
+                }
+            }
+
+            // 2. 선택한 카드 보여줌, 2개 다 선택했고 3개째 선택할 때 비교 ✅
+            function selectedCardShow(e) {
+                // 2-1. 카드가 앞면, 그대로 isCardFront() ✅
+                if (isCardFront(e)) return;
+
+                // 2-3. 두번째 카드인 경우 비교 isSameCard() ✅
+                if (selectedCards.length == 2) {
+                    isSameCard();
+                    return;
+                }
+
+                // 2-2. 카드가 뒷면, 앞으로 뒤집기 ✅
+                selectedCards.push(e);
+                cardShow(e);
+            }
+
+            // 카드가 앞면인지 확인 ✅
+            function isCardFront(e) {
+                return e.state === "front" ? true : false;
+            }
+            
+            // 3. 카드 석기 ✅
+            function cardShuffle() {
+                for (let i=0; i<100; i++) {
+                    cardNumbers.sort(() => Math.random()-0.5);
+                }
+            }
+
+            // 하나의 카드만 보여줌 ✅
+            function cardShow(e) {
+                e.setAttribute("src", `img/card_img/${e.value}.png`);
+                e.state = "front";
+            
+            }
+
+            // 5. 카드 뒤집기 ✅
+            function cardHide(e) {
+                for (card of selectedCards) {
+                    card.setAttribute("src", "img/card_img/back.png");
+                    card.state = "back";
+                }
+
+                selectedCards.splice(0)
+            }
+
+            // 6. 카드가 맞는지 비교 ✅
+            function isSameCard() {
+                if (selectedCards[0].number === selectedCards[1].number) {
+                    selectedCards.splice(0)
+                    return;
+                } 
+
+                cardHide();
+            }
+            
+            // 이미지 태그 생성해서 영역에 추가 ✅
+            function createCards() {
+                for (number of cardNumbers) {
+                    const e = document.createElement("img");
+
+                    e.setAttribute("src", "img/card_img/back.png");
+                    e.number = cardMap.get(number);
+                    e.value = number;// 이거 왜 이럼? ㅋ
+                    e.state = "back"; // 이둘의 차이는 뭐임? .attribute VS setAttribute()
+                    e.setAttribute("onclick", "selectedCardShow(this)");
+
+                    cardArea.appendChild(e);
+                }
+
+            
+            }
+
+
+            // 모든 카드 보이기 ✅
+            function allCardsShow() {
+                const cardAreaChildren = cardArea.children;
+
+                for (child of cardAreaChildren) {
+                    child.state = "front";
+                    child.setAttribute("src", `img/card_img/${child.value}.png`);
+                    
+                }
+            }
+
+            // 모든 카드 뒤집기 ✅
+            function allCardsHide() {
+                const cardAreaChildren = cardArea.children;
+
+                for (child of cardAreaChildren) {
+                    child.state = "back";
+                    child.setAttribute("src", `img/card_img/back.png`);
+                    
+                }
+            }
+
+            // 다시 섞어서 보여주기 ✅
+            function allCardsShuffle() {
+                gameStart();
+            }
+    </script>
+</body>
+</html>
