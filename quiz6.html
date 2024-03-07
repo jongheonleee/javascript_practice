@@ -82,7 +82,6 @@
         
     </style>
 </head>
-<!--<div class="playerArea">-->
 <body>
     <span id="leftPlayerArea">
         <div id="firstPlayerArea">
@@ -305,15 +304,11 @@
             var cardShapes = ["diamond", "clova", "heart", "spade"]; // 카드의 모양을 문자열로 저장 
             var cards = []; // 생성된 카드 객체를 저장  
             var currentPlayerSelectedCards = []; // 현재 플레이어가 선택한 카드를 저장 
-            var firstPlayer = new Player("반항하고 싶어👨🏻‍🎤", 0, 5); // 첫번째 플레이어 저장 
-            var secondPlayer = new Player("먹는게 최고지👩🏻‍🍳", 0, 5); // 두번째 플레이어 저장 
+            var firstPlayer = null; // 첫번째 플레이어 저장 
+            var secondPlayer = null; // 두번째 플레이어 저장 
             var currentPlayer = null; // 현재 플레이어 저장 
-
-
             var gameResultMessage = new Map(); // 게임 결과 맵에 저장 
-            gameResultMessage.set(-1, `"${firstPlayer.getName()}"이 이겼습니다.🔊`); 
-            gameResultMessage.set(0, `"${firstPlayer.getName()}"와 "${secondPlayer.getName()}"의 점수가 같습니다. 무승부입니다.🔊`);
-            gameResultMessage.set(1, `${secondPlayer.getName()}가 이겼습니다.🔊`);
+
 
             // 게임 판 업데이트 
             this.updateGame = function() {
@@ -321,6 +316,7 @@
                 this.createCards(); // 카드 객체 생성해서 배열에 담기
                 this.createAllCardElement(); // 카드 태그 생성해서 html 문서에 추가
                 this.createAllPlayerElement(); // 플레이어 태그 생성해서 html 문서에 추가 
+                this.createGameResultMessage(); // 게임 메시지 저장
             }
 
             // 게임 판 실시간 업데이트, 플레이어 정보만 실시간 변경
@@ -351,6 +347,8 @@
 
             // 플레이어 태그 생성해서 html 문서에 추가 
             this.createAllPlayerElement = function() {
+                firstPlayer = new Player("반항하고 싶어👨🏻‍🎤", 0, 5); // 첫번째 플레이어 저장 
+                secondPlayer = new Player("먹는게 최고지👩🏻‍🍳", 0, 5); // 두번째 플레이어 저장 
                 const firstPlayerArea = document.getElementById("firstPlayerArea");
                 const secondPlayerArea = document.getElementById("secondPlayerArea");
                 firstPlayerArea.innerHTML = `<h3 class="title">${firstPlayer.getName()}</h3><p class="title"> 🎯 남은 횟수 ${firstPlayer.getLeftCount()} 점수는 ${firstPlayer.getScore()}</p>`;
@@ -481,6 +479,12 @@
                 const resultMessage = gameResultMessage.get(result);
                 alert(resultMessage);
             }
+
+            this.createGameResultMessage = function() {
+                gameResultMessage.set(-1, `"${firstPlayer.getName()}"이 이겼습니다.🔊`); 
+                gameResultMessage.set(0, `"${firstPlayer.getName()}"와 "${secondPlayer.getName()}"의 점수가 같습니다. 무승부입니다.🔊`);
+                gameResultMessage.set(1, `${secondPlayer.getName()}가 이겼습니다.🔊`);
+            }
         }
 
         const gameManager = new GameManager(); // 게임 플레이어를 전역 변수로 생성 
@@ -517,8 +521,7 @@
         function getGameResult() {
             const answer = gameManager.decideGameResult();
             if (answer) {
-                gameManager.firstPlayer = new Player();
-                gameManager.secondPlayer = new Player();
+
                 gameManager.updateGame();
             }
         }
