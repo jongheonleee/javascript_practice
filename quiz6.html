@@ -168,28 +168,28 @@
                         // currentPlayer : 현재 플레이어 객체, 현재 게임을 진행하는 객체
                         // gameResult : GameResult 객체
 
-                    // im -> updateGame(), createAllCardElement(), createAllPlayerElement(), createCards(), shuffleCardImageNumbers(), setFirstPlayerOnCurrentPlayer(), setSecondPlayerOnCurrentPlayer(), currentPlayerSelectCard(), findCurrentPlayerSelectedCard(), compareCurrentPlayerSelectedCards(), showCurrentPlayerSelectedCards(), deciedGameResult()
-                        // updateGame() : 게임 판을 업데이트함
-                        // createAllCardElement() : 디스플레이에 들어갈 모든 카드 태그를 생성해서 추가
-                        // createAllPlayerElement() : 디스플레이에 들어갈 모든 플레이어 태그를 생성해서 추가
-                        // createCards() : 모든 카드 객체를 생성하고 배열에 저장함
-                        // shuffleCardImageNumbers() : 카드 이미지 번호를 섞음
+                    // im -> startGame(), appendAllCardTag(), appendAllPlayerTag(), createAllCard(), shuffleAllCardImageNumber(), setFirstPlayerOnCurrentPlayer(), setSecondPlayerOnCurrentPlayer(), occurPlayerSelectCard(), findSelectedCardByTag(), compareTwoSelectedCard(), showSelectedCard(), deciedGameResult()
+                        // startGame() : 게임 판을 업데이트함
+                        // appendAllCardTag() : 디스플레이에 들어갈 모든 카드 태그를 생성해서 추가
+                        // appendAllPlayerTag() : 디스플레이에 들어갈 모든 플레이어 태그를 생성해서 추가
+                        // createAllCard() : 모든 카드 객체를 생성하고 배열에 저장함
+                        // shuffleAllCardImageNumber() : 카드 이미지 번호를 섞음
                         // setFirstPlayerOnCurrentPlayer() : 첫번째 플레이어를 현재 플레이어로 설정
                         // setSecondPlayerOnCurrentPlayer() : 두번째 플레이어를 현재 플레이어로 설정
-                        // currentPlayerSelectCard() : 현재 플레이어가 카드를 선택했을 때 작업 처리
-                        // findCurrentPlayerSelectedCard() : 현재 플레이어가 선택한 카드를 
-                        // compareCurrentPlayerSelectedCards() : 현재 플레이어가 선택한 2 카드가 서로 일치하는지(카드 숫자, 카드 색깔)
-                        // showCurrentPlayerSelectedCards() : 현재 플레이어가 선택한 카드들을 보여줌
+                        // occurPlayerSelectCard() : 현재 플레이어가 카드를 선택했을 때 작업 처리
+                        // findSelectedCardByTag() : 현재 플레이어가 선택한 카드를 
+                        // compareTwoSelectedCard() : 현재 플레이어가 선택한 2 카드가 서로 일치하는지(카드 숫자, 카드 색깔)
+                        // showSelectedCard() : 현재 플레이어가 선택한 카드들을 보여줌
                         // decidGameResult() : 게임 결과를 판단함 
 
         // 1. 카드 객체 : 각 카드의 정보를 저장하고 있는 객체 
-        function Card(cardImageNumber = 0, state = "back") {
+        function Card(cardImageNumber = 0, state = false) {
             var cardImageNumber = cardImageNumber; // 카드의 이미지 숫자값
-            var state = state; // 카드의 상태값(앞면, 뒷면)
+            var state = state; // 카드의 상태값(앞면, 뒷면) -> 이거 불린으로 변경 
 
             // 카드가 앞면인지 응답
             this.isFront = function() {
-                return state === "front" ? true : false;
+                return state;
             }
 
             // 카드의 숫자 계산 
@@ -198,9 +198,9 @@
             }
 
             // 카드의 모양 계산 
-            //this.getShape = function() {
-            //    return this.shapes[Math.floor(this.cardImageNumber/13)]; 
-            //}
+            this.getShape = function() {
+                return Math.floor(cardImageNumber/13); 
+            }
 
             // 카드의 색깔 계산 
             this.getColor = function() {
@@ -212,23 +212,23 @@
                 return cardImageNumber;
             }
 
-            // 해당 카드와 매개변수로 전달 받은 다른 카드의 숫자값과 컬러값을 비교하여 결과 계산 
-            this.isSameNumberAndColor = function(otherNumber, otherColor) {
-                let sameCount = 0;
-                sameCount += (this.isSameNumber(otherNumber) ? 1 : 0);
-                sameCount += (this.isSameColor(otherColor) ? 1 : 0);
-
-                return sameCount;
+            this.calculateSmaeCount = function(otherNumber, otherColor, otherShape) {
+                return this.isSameNumber(otherNumber) + this.isSameColor(otherColor) + this.isSameShape(otherShape);
             }
 
             // 매개변수로 전달 받은 다른 카드의 숫자와 일치하는지 판단 
             this.isSameNumber = function(otherNumber) {
-                return this.getNumber() === otherNumber ? true : false;
+                return this.getNumber() === otherNumber ? 1 : 0;
             }
 
             // 매개변수로 전달 받은 다른 카드의 색깔과 일치하는지 판단 
             this.isSameColor = function(otherColor) {
-                return this.getColor() === otherColor ? true : false;
+                return this.getColor() === otherColor ? 1 : 0;
+            }
+
+            // 매개변수로 전달 받은 다른 카드의 모양과 일치하는지 판단 
+            this.isSameShape = function(otherShape) {
+                return this.getShape() === otherShape ? 1 : 0;
             }
 
             // 매개변수로 전달 받은 카드 이미지 숫자값과 맞는지 판단 
@@ -238,14 +238,8 @@
 
             // 카드 뒤집기 
             this.flip = function() {
-                state = (state === "front" ? "back" : "front");
+                state = !state;
             }
-            
-            // 카드 상태 조회 
-            this.getState = function() {
-                return state;
-            }
-
         }
 
         // 2. 플레이어 객체 : 각 플레이어의 정보를 저장하고 있는 객체 
@@ -294,34 +288,56 @@
 
         // 3. 게임 매니저 객체 : 게임 진행을 담당해주는 객체 
         function GameManager() {
-            var cardImageNumbers = [   
-                                0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 
-                                10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
-                                20, 21, 22, 23, 24, 25, 26, 27, 28, 29,
-                                30, 31, 32, 33, 34, 35, 36, 37, 38, 39,
-                                40, 41, 42, 43, 44, 45, 46, 47, 48, 49,
-                                            50, 51
-                            ]; // 카드 이미지 숫자를 배열에 저장 
-            var cardShapes = ["diamond", "clova", "heart", "spade"]; // 카드의 모양을 문자열로 저장 
+            var cardImageNumbers = []; // 카드 이미지 숫자 저장  
+            const FIRST_CARD_IMAGE_NUMBER = 0;
+            const LAST_CARD_IMAGE_NUMBER = 51;
+            for (let number = FIRST_CARD_IMAGE_NUMBER; number <= LAST_CARD_IMAGE_NUMBER; number++) {
+                cardImageNumbers.push(number);
+            }
             var cards = []; // 생성된 카드 객체를 저장  
             var currentPlayerSelectedCards = []; // 현재 플레이어가 선택한 카드를 저장 
-            var firstPlayer = new Player("반항하고 싶어👨🏻‍🎤", 0, 5); // 첫번째 플레이어 저장 
-            var secondPlayer = new Player("먹는게 최고지👩🏻‍🍳", 0, 5); // 두번째 플레이어 저장 
-            var currentPlayer = null; // 현재 플레이어 저장 
+            var firstPlayer; // 첫번째 플레이어 저장 
+            var secondPlayer; // 두번째 플레이어 저장 
+            var currentPlayer; // 현재 플레이어 저장 
             var gameResultMessage = new Map(); // 게임 결과 맵에 저장 
 
 
-            // 게임 판 업데이트 
-            this.updateGame = function() {
-                this.shuffleCardImageNumber(); // 카드 이미지 숫자 섞기
-                this.createCards(); // 카드 객체 생성해서 배열에 담기
-                this.createAllCardElement(); // 카드 태그 생성해서 html 문서에 추가
-                this.createAllPlayerElement(); // 플레이어 태그 생성해서 html 문서에 추가 
+            // 게임 시작할 때 게임판 세팅 
+            this.startGame = function() {
+                this.shuffleAllCardImageNumber(); // 카드 이미지 숫자 섞기
+                this.createAllCard(); // 카드 객체 생성해서 배열에 담기
+                this.createAllPlayer(); // 플레이어 객체 생성
                 this.createGameResultMessage(); // 게임 메시지 저장
+                this.appendAllCardTag(); // 카드 태그 생성해서 html 문서에 추가
+                this.appendAllPlayerTag(); // 플레이어 태그 생성해서 html 문서에 추가 
+            }
+
+            // 게임판 업데이트
+            this.updateGame = function() {
+                this.hideAllFrontCard(); // 앞면인 카드 모두 다 뒤집기 
+                this.shuffleAllCard(); // 카드 객체 배열 섞기
+                this.appendAllCardTag(); // 카드 태그 생성해서 붙이기 
+                this.updateAllPlayerRecord(); // 플레이어 태그 업데이트
+            }
+
+            // 모든 카드 섞기 
+            this.shuffleAllCard = function() {
+                for (let i = 0; i < 100; i++) {
+                    cards.sort(() => Math.random() - 0.5);
+                }
+            }
+
+            // 앞면인 카드 뒤집기 
+            this.hideAllFrontCard = function() {
+                for (card of cards) {
+                    if (card.isFront()) {
+                        card.flip();
+                    }
+                }
             }
 
             // 게임 판 실시간 업데이트, 플레이어 정보만 실시간 변경
-            this.updateEachPlayerState = function() {
+            this.updateAllPlayerRecord = function() {
                 const firstPlayerArea = document.getElementById("firstPlayerArea");
                 const secondPlayerArea = document.getElementById("secondPlayerArea");
                 firstPlayerArea.innerHTML = `<h3 class="title">${firstPlayer.getName()}</h3><p class="title"> 🎯 남은 횟수 ${firstPlayer.getLeftCount()} 점수는 ${firstPlayer.getScore()}</p>`;
@@ -329,13 +345,13 @@
             }
 
             // 카드 태그 생성해서 html 문서에 추가
-            this.createAllCardElement = function() {
+            this.appendAllCardTag = function() {
                 const cardArea = document.getElementById("cardArea");
             
                 cardArea.innerHTML = "";
                 for (card of cards) {
                     const e = document.createElement("img");
-                    if (card.getState() === "front") {
+                    if (card.isFront()) {
                         e.setAttribute("src", `img/card_img/${card.getCardImageNumber()}.png`);
                     } else {
                         e.setAttribute("src", `img/card_img/back.png`);
@@ -347,7 +363,7 @@
             }
 
             // 플레이어 태그 생성해서 html 문서에 추가 
-            this.createAllPlayerElement = function() {
+            this.appendAllPlayerTag = function() {
                 const firstPlayerArea = document.getElementById("firstPlayerArea");
                 const secondPlayerArea = document.getElementById("secondPlayerArea");
                 firstPlayerArea.innerHTML = `<h3 class="title">${firstPlayer.getName()}</h3><p class="title"> 🎯 남은 횟수 ${firstPlayer.getLeftCount()} 점수는 ${firstPlayer.getScore()}</p>`;
@@ -355,15 +371,22 @@
             }
 
             // 카드 객체 생성해서 배열에 담기
-            this.createCards = function() {
+            this.createAllCard = function() {
                 cards.splice("");
                 for (cardImageNumber of cardImageNumbers) {
                     cards.push(new Card(cardImageNumber));
                 }
             }
 
+            // 플레이어 객체 생성해서 배열에 담기
+            this.createAllPlayer = function() {
+                firstPlayer = new Player("반항하고 싶어👨🏻‍🎤", 0, 5); // 첫번째 플레이어 저장 
+                secondPlayer = new Player("먹는게 최고지👩🏻‍🍳", 0, 5); // 두번째 플레이어 저장
+                currentPlayer = null;
+            }
+
             // 카드 이미지 숫자 섞기
-            this.shuffleCardImageNumber = function() {
+            this.shuffleAllCardImageNumber = function() {
                 for (let i=0; i<100; i++) {
                     cardImageNumbers.sort(() => Math.random() - 0.5);
                 }
@@ -380,7 +403,7 @@
             }
 
             // 현재 플레이어가 카드를 선택했을 때 처리 과정 
-            this.currentPlayerSelectCard = function(selectedCardTag) {
+            this.occurPlayerSelectCard = function(selectedCardTag) {
                 // 현재 플레이어 객체가 설정되지 않은 경우 
                 if (!(currentPlayer instanceof Player)) {
                     alert("플레이어 시작 버튼을 누르고 게임을 진행하세요.🔊");
@@ -391,26 +414,28 @@
                 if (!currentPlayer.isLeftCount()) {
                     alert(`"${currentPlayer.getName()}"의 게임 횟수가 ${currentPlayer.getLeftCount()}입니다.🔊`);
                     alert(`"${currentPlayer.getName()}"의 점수는 ${currentPlayer.getScore()}입니다.🔊`);
-                    this.updateEachPlayerState();
+                    this.updateAllPlayerRecord();
                     return;
                 }
 
                 // 두개를 이미 선택했으면 판단하기
                 if (currentPlayerSelectedCards.length === 2) {
-                    const amount = this.compareCurrentPlayerSelectedCards();
-                    currentPlayer.addScore(amount);
-                    currentPlayer.decreaseCount();
-                    this.updateEachPlayerState();
+                    const amount = this.compareTwoSelectedCard();
+                    currentPlayer.addScore(amount); // 현재 플레이어에 점수 추가 
+                    currentPlayer.decreaseCount(); // 현재 플레이어 게임 횟수 1 감소
+                    this.updateAllPlayerRecord(); // 각 플레이어 기록 업데이트 
                     return;
                 }
 
-                const currentPlayerSelectedCard = this.findCurrentPlayerSelectedCard(selectedCardTag);
+                const currentPlayerSelectedCard = this.findSelectedCardByTag(selectedCardTag);
+                // 앞면인거막아버리기 
+                if (currentPlayerSelectedCard.isFront()) return; 
                 currentPlayerSelectedCards.push(currentPlayerSelectedCard);
-                this.showCurrentPlayerSelectedCard(selectedCardTag);
+                this.showSelectedCard(selectedCardTag);
             }
 
             // 현재 플레이어가 선택한 태그에 매칭되는 카드 객체 찾기 
-            this.findCurrentPlayerSelectedCard = function(selectedCardTag) {
+            this.findSelectedCardByTag = function(selectedCardTag) {
                 const selectedCardImageNumber = parseInt(selectedCardTag.getAttribute("data-number"));
                 
                 let currentPlayerSelectedCard = null;
@@ -425,31 +450,35 @@
             }
 
             // 현재 플레이어가 선택한 카드들을 비교함 
-            this.compareCurrentPlayerSelectedCards = function() {
+            this.compareTwoSelectedCard = function() {
                 const firstSelectedCard = currentPlayerSelectedCards.shift();
                 const secondSelectedCard = currentPlayerSelectedCards.shift();
-                const amount = firstSelectedCard.isSameNumberAndColor(secondSelectedCard.getNumber(), secondSelectedCard.getColor());
-                
-                // 숫자와 컬러가 다 틀린 경우
+                const amount = firstSelectedCard.calculateSmaeCount(secondSelectedCard.getNumber(), secondSelectedCard.getColor(), secondSelectedCard.getShape());
+        
+                // 숫자, 컬러, 모양 다 안맞은 경우 뒷면으로 돌리기 
                 if (amount === 0) {
                     // 해당 카드 객체에 해당하는 태그의 속성 업데이트(뒷면으로 설정)
                     const cardAreaChildren = document.getElementById("cardArea").children;
+                    firstSelectedCard.flip(); // 첫번째 카드 뒤집기 
+                    secondSelectedCard.flip(); // 두번째 카드 뒤집기 
                     for (child of cardAreaChildren) {
                         if (firstSelectedCard.isSameCardImageNumber(parseInt(child.getAttribute("data-number"))) || secondSelectedCard.isSameCardImageNumber(parseInt(child.getAttribute("data-number")))) {
                             child.setAttribute("src", `img/card_img/back.png`);
                         } 
                     }
                 }
+
                 return amount;
             }
 
             // 현재 플레이어가 선택한 카드를 보여줌 
-            this.showCurrentPlayerSelectedCard = function(selectedCardTag) {
+            this.showSelectedCard = function(selectedCardTag) {
                 // 현재 플레이어의 게임 횟수가 0인 경우 
                 if (!currentPlayer.isLeftCount()) return;
 
                 // 현재 플레이어가 선택한 태그에 해당하는 카드 객체 찾기 
-                const currentPlayerSelectedCard = this.findCurrentPlayerSelectedCard(selectedCardTag);
+                const currentPlayerSelectedCard = this.findSelectedCardByTag(selectedCardTag);
+                
                 // 카드 객체가 앞면이면 스킵 
                 if (currentPlayerSelectedCard.isFront()) return;
 
@@ -460,7 +489,7 @@
             }
 
             // 게임 결과 판단 
-            this.decideGameResult = function() {
+            this.getGameResult = function() {
                 // 플레이어의 게임 횟수가 남아있는 경우, 스킵 
                 if (firstPlayer.isLeftCount() || secondPlayer.isLeftCount()) {
                     alert(`아직 플레이어의 판수가 남아있습니다. 모든 플레이어의 판수 다 끝나면 요청해주세요.🔊`);
@@ -470,11 +499,11 @@
                 // 게임 결과를 숫자로 반환 
                 const result = firstPlayer.isWinner(secondPlayer.getScore());
                 // 숫자 결과를 문자 결과로 반환해서 출력 
-                this.getResultMessage(result);
+                this.notifyGameResult(result);
                 return true;
             }
 
-            this.getResultMessage = function(result) {
+            this.notifyGameResult = function(result) {
                 const resultMessage = gameResultMessage.get(result);
                 alert(resultMessage);
             }
@@ -489,7 +518,7 @@
                 return currentPlayer.getName();
             }
 
-            this.resetPlayers = function() {
+            this.resetAllPlayer = function() {
                 alert("플레이어의 기록을 초기화합니다.💥")
                 firstPlayer = new Player("반항하고 싶어👨🏻‍🎤", 0, 5); // 첫번째 플레이어 저장 
                 secondPlayer = new Player("먹는게 최고지👩🏻‍🍳", 0, 5); // 두번째 플레이어 저장 
@@ -499,7 +528,7 @@
         const gameManager = new GameManager(); // 게임 플레이어를 전역 변수로 생성 
         window.onload = function() {
             alert('어서와 여늘이의 "Poker Game 🎰"은 처음이지?!💥')
-            gameManager.updateGame();
+            gameManager.startGame();
         }
 
         // 사용자가 첫번째 플레이어의 게임 시작 버튼을 누른 경우 
@@ -524,15 +553,15 @@
 
         // 사용자가 특정 태그를 선택하면, 게임 매니저가 처리 
         function selectCardTag(selectCardTag) {
-            gameManager.currentPlayerSelectCard(selectCardTag);
+            gameManager.occurPlayerSelectCard(selectCardTag);
         }
 
         // 사용자가 결과 출력 버튼을 누른경우, 게임 매니저가 게임 결과 판단 
         function getGameResult() {
-            const answer = gameManager.decideGameResult();
+            const answer = gameManager.getGameResult();
             if (answer) {
-                gameManager.resetPlayers();
-                gameManager.updateGame();
+                gameManager.resetAllPlayer();
+                gameManager.startGame(); // 📌
             }
         }
     </script>
