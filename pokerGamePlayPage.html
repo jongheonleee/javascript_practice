@@ -24,10 +24,13 @@
         #gameArea {
             text-align: center;
             display: inline;
-            margin-top: 0;
-            margin-bottom: 0;
-            margin-left: 10em;
-            margin-right: 10em;
+            height: 500px;
+            width: 500px;
+            position: static;
+            margin-top: 50px;
+            margin-bottom: 50px;
+            margin-left: 10px;
+            margin-right: 10px;
         }
         #btnArea {
             text-align: center
@@ -55,10 +58,16 @@
         #firstPlayerArea {
             text-align: center;
             display: inline;
+            float : left;
+            margin-top: 3em;
+            margin-bottom: 3em;
         }
         #secondPlayerArea {
             text-align: center;
             display: inline;
+            float : right;
+            margin-top: 3em;
+            margin-bottom: 3em;
         }
         #playerRecordArea {
             display: inline;
@@ -66,25 +75,37 @@
         #playerArea {
             display: inline;
         }
+
         .title {
             color: white;
             font-style: italic;
             font-size : 25px;
             display: inline;
         }
+
         #leftPlayerArea {
             float : left;
         }
         #rightPlayerArea {
             float : right;
         }
+
+        .record {
+            color : yellow;
+            font-style: oblique;
+        }
         
     </style>
 </head>
 <body>
-    <h1 style="text-align: center; color : white">정석 코딩 퀴즈 4 - Poker Game 🎰</h1>
-    <br>
-    <span id="leftPlayerArea">
+    <h1 style="text-align: center; color : white">Poker Game 🎰</h1>
+    <div style="text-align: center; color : white;">
+        <input id="userInformation" type="text">
+        <button onclick="clickCreatePlayerButton('userInformation')">Create Your Player!!🤹🏻‍♂️</button>
+    </div>
+    
+
+    <!-- <span id="leftPlayerArea">
         <div id="firstPlayerArea">
             <h2 class="title"></h2>
             <br>
@@ -95,15 +116,31 @@
             <h2 class="title"></h2>
             <br>
         </div>
+    </span> -->
+    <span>
+        <div id="firstPlayerArea"></div>
+        <div id="secondPlayerArea"></div>
     </span>
-    
-    
+
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+
+
+        
+    </div>
 
     <div id="gameArea">
         <div id="cardArea"></div>
     </div>
 
-
+    <br>
+    <br>
+    <br>
+    
     <div id="btnArea">
         <button onclick="selectFirstPlayer()">
             플레이어1 시작
@@ -116,9 +153,20 @@
         <button onclick="selectSecondPlayer()">
             플레이어2 시작
         </button>
+        <button onclick="clickHintButton()">
+            힌트
+        </button>
+        <button onclick="clickRuleButton()">
+            룰 설명
+        </button>
     </div>
 
     <script>
+        // 추가 된 기능 
+            // 1. 게임 룰 설명
+            // 2. 힌트 2번 주기
+            // 3. 사용자가 직접 이름 지정
+            
         // 3차 객체 설계도 
             // 객체 설계 
                 // 1. 카드 객체 ✅
@@ -157,7 +205,7 @@
                         // addScore() : 자신의 점수에 일정량 더함
                         // decreaseCount() : 남은 횟수를 1 감소함
             
-                // 3. 게임 매니저 객체 ✅
+                // 3. 게임 진행자 객체 ✅
                     // iv -> cardImageNumbers, FIRST_CARD_IMAGE_NUMBER, LAST_CARD_IMAGE_NUMBER, cards, currentPlayerSelectedTwoCard, firstPlayer, secondPlayer, currentPlayer, gameResultMessage
                         // cardImageNumbers : 카드 이미지 숫자를 저장하는 배열
                         // FIRST_CARD_IMAGE_NUMBER, LAST_CARD_IMAGE_NUMBER : 카드 이미지 숫자의 시작과 끝 숫자
@@ -200,39 +248,304 @@
                             // notifyGameResult() : 게임 결과 발표
 
                             // resetAllPlayer() : 모든 플레이어 초기화 
-        
 
-        const gameManager = new GameManager(); // 게임 플레이어를 전역 변수로 생성 
+        // 추가 기능 구현 및 객체 분할
+                // 1. GameHelper 게임 헬퍼 객체, 사용자와 소통하는 객체
+                    // 1-1. 룰을 설명 expainRule()✅
+
+                    // 1-2. 힌타를 줌
+                        // 사용자가 힌트 버튼을 클릭
+                            // 바깥 메서드에서 이 객체로 연결
+                            // giveHint() : 힌트를 주는 메서드, 랜덤으로 5장의 뒷면 카드 뽑음, 그리고 1초 동안 보여줌
+                                // 현재 플레이어의 힌트 갯수가 유효한지 확인
+                                    // 유효하지 않으면 종료
+                                
+                                // 랜덤으로 뒷면 카드 5개 뽑음
+                                // 앞면으로 돌리기 
+                                // 1초동안 유지
+                                // 현재 플레이어의 힌트 갯수 1 카운트 다운
+
+                    // clickHintButton()
+                        // giveHint()
+                            // if (!currentPlayer.isLeftHintCount()) 
+                                // alert("이미 모든 힌트를 소진했습니다.");
+                                // return;
+
+                            // deck.selectRandomSomeCard()
+                            // deck.showRandomSomeCard();
+                            // currentPlayer.decreaseLeftHintCount();
+
+                    // 1-3. 사용자로부터 닉네임, 게임 유효 횟수 ✅
+                        // 사용자가 닉네임 생성버튼 누름 
+                            // 바깥 메서드에서 이 객체로 연결
+                            // createPlayer() : 사용자로부터 닉네임을 입력 받는 메서드
+                                // 현재 생성된 플레이어 객체 상태 확인
+                                    // 2개, 종료
+                                    // 1개, 두번째 플레이어 정보로 입력
+                                    // 0개, 첫번째 플레이어 정보로 입력
+
+                                // 사용자가 입력한 닉네임과 유효 횟수 보관
+                                // 랜덤 아바타 생성해서 사용자가 입력한 닉네임과 결합
+                                // 플레이어 객체 생성(이때, 힌트 개수랑 점수는 고정값, 힌트 개수 : 3, 점수 : 0)
+                                // 생성하려고 플레이어에 저장
+
+                    // clickCreatePlayerButton()
+                        // createPlayer()
+                            // if (firstPlayer !== null && secondPlayer !== null) 
+                                // alert("이미 모든 플레이어가 생성되었습니다.");
+                                // return;
+
+                            // const userName, leftCount;
+                            // const avator = selectRandomAvator();
+                            // if (firstPlayer === null) firstPlayer = new Player(userName+avator, leftCount); // score = 0, leftHintCount = 3
+                            // else if (secondPlayer === null) secondPlayer = new Player(userName+avator, leftCount); // // score = 0, leftHintCount = 3
+
+                    // 1-4. 랜덤 아바타를 선택함 ✅
+                        // 위의 메서드가 호출될 때 이 메서드도 호출
+                            // selectRandomAvator() : 플레이어 닉네임 옆에 붙을 아바타 뽑기
+                                // 해당 객체에 저장된 아바타 배열
+                                // 랜덤으로 한개 선택 
+                                // 선택한 아바타 반환
+                        
+                        // selectRandomAvator() 
+                            // shuffleAllAvator()
+                            // const avator = avators[0];
+                            // return avator;
+        // 전역 변수
+        const gameModerator = new GameModerator();
+        const gameHelper = new GameHelper();
+        const deck = new Deck();
+        
+        let firstPlayer = null;
+        let secondPlayer = null;
+        let currentPlayer = null;
+
         window.onload = function() {
-            alert('어서와 여늘이의 "Poker Game 🎰"은 처음이지?!💥')
-            gameManager.startGame();
+                alert('어서와 여늘이의 "Poker Game 🎰"은 처음이지?!💥');
+                deck.shuffle();
+                gameModerator.startGame();
         }
+        
+        function GameHelper() {
+            const avators = ["🤹🏻‍♂️", "👨🏻‍🎤", "👩🏻‍🍳", "🦹🏻‍♂️", "🤵🏻‍♂️", "🧝🏻‍♀️", "🦸🏻‍♀️", "🧙🏻", "👰🏻‍♀️"];
+            const NUMBER_OF_CARD = 52;
+            const randomGenerator = () => Math.floor(Math.random()*NUMBER_OF_CARD);
+
+            this.expalinRule = function() {
+                let message = "";
+                message += '안녕하세요"Poker Game 🎰"에 오신것을 환영합니다.'; 
+                message += ' 포커 게임을 시작하기 앞서 간단하게 룰을 설명하겠습니다.';
+                message += ' 각 플레이어는 5판의 판수와 3번의 힌트 기회가 주어집니다.';
+                message += ' 또한, 플레이어는 한판당 2개의 카드를 선택하면됩니다.';
+                message += ' 이때, 카드의 숫자, 모양, 색깔이 판단 기준이 되며 3중에 1개라도 맞추면 1점을 획득하고 2개를 맞추면 2점을 획득하며 두 카드는 앞면 상태로 놓여집니다.';
+                message += ' 하지만 모두 못 맞출 경우 카드는 다시 뒤집힙니다. 그리고 모든 플레이어가 모두 플레이한 경우 게임 결과 출력 버튼을 통해 게임 결과를 확인하실 수 있습니다.';
+                alert(message);
+            }
+
+            this.createPlayer = function(input) {
+                if (firstPlayer !== null && secondPlayer !== null ) {
+                    alert("이미 모든 플레이어가 생성되었습니다.💥");
+                    return;
+                }
+
+                const userName = input.value ? input.value : "익명플레이어";
+                const avator = this.selectRandomAvator();
+
+                if (firstPlayer === null) {
+                    firstPlayer = new Player(avator+userName, 7, 3);
+                    alert(`첫번째 플레이어 "${firstPlayer.getName()}" 가 생성되었습니다.`);
+                }else if (secondPlayer === null) {
+                    secondPlayer = new Player(avator+userName, 7, 3);
+                    alert(`두번째 플레이어 "${secondPlayer.getName()}" 가 생성되었습니다.`);
+                }
+                gameModerator.appendAllPlayerTag();
+            }
+
+            this.selectRandomAvator = function() {
+                this.suffleAllAvator();
+                return avators[0];
+            }
+
+            this.suffleAllAvator = function() {
+                for (let i=0; i<100; i++) {
+                    avators.sort(() => Math.random()-0.5);
+                }
+            }
+
+            this.giveHint = function() {
+                if (currentPlayer === null) {
+                    alert("현재 플레이어가 설정되지 않았거나 플레이어를 생성하지 않았습니다. 다시 확인하고 플레이 해주세요.💥");
+                    return;
+                }
+                deck.showCardForHint();
+            }
+        }
+    
+
+                // 3. Deck 카드 덱 객체, 카드 묶음 객체, 여기서 카드 일련 과정 관리 
+                    // 생성된 카드 객체 저장
+                    // 현재 플레이어가 선택한 2개의 카드 저장
+                    // 카드 이미지 숫자 저장
+                        // 3-1. 카드 이미지 숫자 섞기 shuffleAllCardImageNumber()
+                        
+                        // 3-2. 카드 객체 생성 createAllCard()
+                        // 3-3. 랜덤으로 뒷면인 5개의 카드를 뽑음 selectRandomCard()
+                        // 3-4. 랜덤으로 뽑은 카드를 1~2초 동안 보여줌 showCardForHint()
+        function Deck() {
+            const FIRTS_CARD_IMAGE_NUMBER = 0;
+            const LAST_CARD_IMAGE_NUMBER = 51;
+            const NUMBER_OF_CARD = 52;
+            const cardAllImageNumber = [];
+            const selectedCardForHint = [];
+            const MAX_HINT_COUNT = 3;
+            const curretPlayerSelectedTwoCard = [];
+            const cards = [];
+            const randomGenerator = () => Math.floor(Math.random()*NUMBER_OF_CARD);
+            let cardIndex = 0;
+            const LAST_CARD_INDEX = NUMBER_OF_CARD;
+
+            for (let i=FIRTS_CARD_IMAGE_NUMBER; i<=LAST_CARD_IMAGE_NUMBER; i++) {
+                cardAllImageNumber.push(i);
+            }
+
+            this.shuffle = function() {
+                this.shuffleAllCardImageNumber();
+                this.createAllCard();
+            }
+
+            this.shuffleAllCardImageNumber = function() {
+                for (let i=0; i<100; i++) {
+                    cardAllImageNumber.sort(() => Math.random()-0.5);
+                }
+            }
+
+            this.createAllCard = function() {
+                for (number of cardAllImageNumber) {
+                    cards.push(new Card(number));
+                }
+            }
+
+            this.selectRandomCard = function() {
+                const randomNumber = randomGenerator();
+                for (card of cards) {
+                    if (card.isSameCardImageNumber(randomNumber)) {
+                        return card;
+                    }
+                }
+            }
+
+            this.showCardForHint = function() {
+                if (currentPlayer === null) {
+                    alert("플레이어를 생성하거나 현재 플레이어 시작버튼을 누르고 게임을 진행해주세요.💥");
+                    return;
+                }
+
+                if (this.isAllCardFront()) {
+                    alert("이미 모든 카드가 다 앞면입니다.💥");
+                    return;
+                }
+
+                if (!currentPlayer.isLeftHintCount()) {
+                    alert(`현재 플레이어인 "${currentPlayer.getName()}"는 힌트를 다 사용하셨습니다.💥`);
+                    return;
+                }
+
+                while (true) {
+                    const selectedCard = this.selectRandomCard();
+                    if (!selectedCard.isFront()) {
+                        selectedCardForHint.push(selectedCard);
+                        selectedCard.flip();
+                        gameModerator.updateGameBoard();
+                        currentPlayer.decreaseHintCount();
+                        return; 
+                    }
+                }
+            }
+
+            this.isAllCardFront = function() {
+                for (card of cards) {
+                    if (!card.isFront()) {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+
+            this.selectCardInOrder = function() {
+                if (cardIndex <= LAST_CARD_IMAGE_NUMBER) {
+                    return cards[cardIndex++];
+                } 
+
+                cardIndex = 0;
+                return cards[cardIndex++];
+            }
+
+            this.isSelectAllCardInOrder = function() {
+                if (cardIndex >= LAST_CARD_INDEX) {
+                    cardIndex = 0;
+                    return true;
+                }
+
+                return false;
+            }
+
+        }
+
+        function clickRuleButton() {
+            gameHelper.expalinRule();
+        }
+
+        function clickHintButton() {
+            gameHelper.giveHint();
+        }
+
+        function clickCreatePlayerButton(inputTagPosion) {
+            const input = document.getElementById(inputTagPosion);
+            gameHelper.createPlayer(input);
+        }
+                
+                // 2. GameMessage 게임 메시지 객체, 게임 상에 메시지 보여주는 객체
+                    // GameModerator, GameHelper 가 사용할 메시지 보관소
+                    // 2-1. GameModerator가 필요한 메시지를 갖다 씀
+                    // 2-2. GameHelper가 필요한 메시지를 갖다 씀 
+
+                // 3. Deck 카드 덱 객체, 카드 묶음 객체, 여기서 카드 일련 과정 관리 
+                    // 생성된 카드 객체 저장
+                    // 현재 플레이어가 선택한 2개의 카드 저장
+                    // 카드 이미지 숫자 저장
+                    // 3-1. 카드 이미지 숫자 섞기
+                    // 3-2. 카드 객체 생성
+                    // 3-3. 랜덤으로 뒷면인 5개의 카드를 뽑음
+                    // 3-4. 랜덤으로 뽑은 카드를 1~2초 동안 보여줌
+
+                    // 3-5. GameModerator에 있는 메서드 이쪽으로 옮기기
         
         // 사용자가 첫번째 플레이어의 게임 시작 버튼을 누른 경우 
         function selectFirstPlayer() {
-            gameManager.setFirstPlayerOnCurrentPlayer(); // 현재 플레이어를 첫번째 플레이어로 설정
-            gameManager.updateGame(); // 게임판 업데이트 
-            alert(`${gameManager.getCurrentPlayerName()}의 게임을 시작합니다.🔊`); // 게임 시작 알림 메시지 출력 
+            gameModerator.setFirstPlayerOnCurrentPlayer(); // 현재 플레이어를 첫번째 플레이어로 설정
+            gameModerator.updateGame(); // 게임판 업데이트 
+            alert(`${gameModerator.getCurrentPlayerName()}의 게임을 시작합니다.🔊`); // 게임 시작 알림 메시지 출력 
         }
         
         // 사용자가 두번째 플레이어의 게임 시작 버튼을 누른 경우 
         function selectSecondPlayer() {
-            gameManager.setSecondPlayerOnCurrentPlayer(); // 현재 플레이어를 두번째 플레이어로 설정 
-            gameManager.updateGame(); // 게임판 업데이트 
-            alert(`${gameManager.getCurrentPlayerName()}의 게임을 시작합니다.🔊`); // 게임 시작 알림 메시지 출력 
+            gameModerator.setSecondPlayerOnCurrentPlayer(); // 현재 플레이어를 두번째 플레이어로 설정 
+            gameModerator.updateGame(); // 게임판 업데이트 
+            alert(`${gameModerator.getCurrentPlayerName()}의 게임을 시작합니다.🔊`); // 게임 시작 알림 메시지 출력 
         }
         
         // 사용자가 특정 태그를 선택하면, 게임 매니저가 처리 
         function selectCardTag(selectCardTag) {
-            gameManager.occurPlayerSelectCard(selectCardTag);
+            gameModerator.occurPlayerSelectCard(selectCardTag);
         }
         
         // 사용자가 결과 출력 버튼을 누른경우, 게임 매니저가 게임 결과 판단 
         function getGameResult() {
-            const answer = gameManager.getGameResult();
+            const answer = gameModerator.getGameResult();
             if (answer) {
-                gameManager.resetAllPlayer();
-                gameManager.startGame(); 
+                gameModerator.resetAllPlayer();
+                gameModerator.startGame(); 
             }
         }
 
@@ -298,10 +611,11 @@
         }
 
         // 2. 플레이어 객체 : 이름, 점수, 남은 게임 횟수 저장하고 그와 관련된 작업을 묶음 
-        function Player(name = "anonymous", score = 0, leftCount = 15) {
+        function Player(name = "anonymous") {
             var name = name; // 이름 
-            var score = score; // 점수 
-            var leftCount = leftCount; // 남은 게임 횟수
+            var score = 0; // 점수 
+            var leftCount = 7; // 게임 횟수
+            var leftHintCount = 3; // 힌트 횟수  
 
             // 자신이 승자인지, 패자인지, 무승부인지 판단(-1 : 자기가 이김, 0 : 무승부, 1 : 상대가 이김)
             this.isWinner = function(otherPlayerScore) {
@@ -311,6 +625,11 @@
             // 남은 횟수가 있는지 응답  
             this.isLeftCount =  function() {
                 return leftCount > 0 ? true : false;
+            }
+
+            // 남은 힌트 횟수가 있는지 응답
+            this.isLeftHintCount = function() {
+                return leftHintCount > 0 ? true : false;
             }
 
             // 이름 반환 
@@ -328,6 +647,11 @@
                 return leftCount;
             }
 
+            // 남은 힌트 횟수 반환
+            this.getLeftHintCount = function() {
+                return leftHintCount;
+            }
+
             // 자신의 점수에 일정량만큼 더함 
             this.addScore = function(amount) {
                 score += amount;
@@ -340,10 +664,17 @@
                 }
             }
 
+            // 남은 힌트 횟수를 1 감소
+            this.decreaseHintCount = function() {
+                if (leftHintCount > 0) {
+                    leftHintCount--;
+                }
+            }
+
         }
 
         // 3. 게임 매니저 객체 : 카드객체와 플레이어 객체를 포함해서, 전체 프로그램의 흐름을 담당
-        function GameManager() {
+        function GameModerator() {
             var cardImageNumbers = []; // 카드 이미지 숫자 저장  
             const FIRST_CARD_IMAGE_NUMBER = 0;
             const LAST_CARD_IMAGE_NUMBER = 51;
@@ -352,9 +683,6 @@
             }
             var cards = []; // 생성된 카드 객체를 저장  
             var currentPlayerTwoSelectedCard = []; // 현재 플레이어가 선택한 카드를 저장 
-            var firstPlayer; // 첫번째 플레이어 저장 
-            var secondPlayer; // 두번째 플레이어 저장 
-            var currentPlayer; // 현재 플레이어 저장 
             var gameResultMessage = new Map(); // 게임 결과 맵에 저장 
 
 
@@ -362,7 +690,6 @@
             this.startGame = function() {
                 this.shuffleAllCardImageNumber(); // 카드 이미지 숫자 섞기
                 this.createAllCard(); // 카드 객체 생성해서 배열에 담기
-                this.createAllPlayer(); // 플레이어 객체 생성
                 this.createGameResultMessage(); // 게임 메시지 저장
                 this.appendAllCardTag(); // 카드 태그 생성해서 html 문서에 추가
                 this.appendAllPlayerTag(); // 플레이어 태그 생성해서 html 문서에 추가 
@@ -374,6 +701,19 @@
                 this.shuffleAllCard(); // 카드 객체 배열 섞기
                 this.appendAllCardTag(); // 카드 태그 생성해서 붙이기 
                 this.updateAllPlayerTag(); // 플레이어 태그 업데이트
+            }
+
+            this.updateGameBoard = function() {
+                const cardAreaChildren = document.getElementById("cardArea").children;
+
+                for (child of cardAreaChildren) {
+                    const card = deck.selectCardInOrder();
+                    if (card.isSameCardImageNumber(parseInt(child.getAttribute("data-number")))) {
+                        if (card.isFront()) {
+                            child.setAttribute("src", `img/card_img/${card.getCardImageNumber()}.png`);
+                        }
+                    }
+                }
             }
 
             // 모든 카드 이미지 숫자를 섞음 
@@ -391,35 +731,31 @@
                 }
             }
 
-            // 모든 플레이어 객체를 생성 
-            this.createAllPlayer = function() {
-                firstPlayer = new Player("반항하고 싶어👨🏻‍🎤", 0, 5); // 첫번째 플레이어 저장 
-                secondPlayer = new Player("먹는게 최고지👩🏻‍🍳", 0, 5); // 두번째 플레이어 저장
-                currentPlayer = null;
-            }
 
             // 모든 게임 결과 메시지를 생성해서 맵에 게임 결과 숫자와 매핑하여 저장 
             this.createGameResultMessage = function() {
-                gameResultMessage.set(-1, `"${firstPlayer.getName()}"이 이겼습니다.🔊`); 
-                gameResultMessage.set(0, `"${firstPlayer.getName()}"와 "${secondPlayer.getName()}"의 점수가 같습니다. 무승부입니다.🔊`);
-                gameResultMessage.set(1, `${secondPlayer.getName()}가 이겼습니다.🔊`);
+                if (firstPlayer instanceof Player && secondPlayer instanceof Player) {
+                    gameResultMessage.set(-1, `"${firstPlayer.getName()}"이 이겼습니다.🔊`); 
+                    gameResultMessage.set(0, `"${firstPlayer.getName()}"와 "${secondPlayer.getName()}"의 점수가 같습니다. 무승부입니다.🔊`);
+                    gameResultMessage.set(1, `${secondPlayer.getName()}가 이겼습니다.🔊`);
+                }
             }
 
             // 모든 카드 객체의 태그를 생성해서 추가 
             this.appendAllCardTag = function() {
                 const cardArea = document.getElementById("cardArea");
-                                    
                 cardArea.innerHTML = "";
-                for (card of cards) {
-                    const e = document.createElement("img");
+                while (!deck.isSelectAllCardInOrder()) {
+                    const card = deck.selectCardInOrder();
+                    const imgTag = document.createElement("img");
                     if (card.isFront()) {
-                        e.setAttribute("src", `img/card_img/${card.getCardImageNumber()}.png`);
+                        imgTag.setAttribute("src", `img/card_img/${card.getCardImageNumber()}.png`);
                     } else {
-                            e.setAttribute("src", `img/card_img/back.png`);
+                        imgTag.setAttribute("src", `img/card_img/back.png`);
                     }
-                    e.setAttribute("data-number", card.getCardImageNumber());
-                    e.setAttribute("onclick", "selectCardTag(this)");
-                    cardArea.appendChild(e);
+                    imgTag.setAttribute("data-number", card.getCardImageNumber());
+                    imgTag.setAttribute("onclick", "selectCardTag(this)");
+                    cardArea.appendChild(imgTag);
                 }
             }
 
@@ -427,8 +763,17 @@
             this.appendAllPlayerTag = function() {
                 const firstPlayerArea = document.getElementById("firstPlayerArea");
                 const secondPlayerArea = document.getElementById("secondPlayerArea");
-                firstPlayerArea.innerHTML = `<h3 class="title">${firstPlayer.getName()}</h3><p class="title"> 🎯 남은 횟수 ${firstPlayer.getLeftCount()} 점수는 ${firstPlayer.getScore()}</p>`;
-                secondPlayerArea.innerHTML = `<h3 class="title">${secondPlayer.getName()}</h3><p class="title"> 🎯 남은 횟수 ${secondPlayer.getLeftCount()} 점수는 ${secondPlayer.getScore()}</p>`;
+                if (firstPlayer instanceof Player) {
+                    firstPlayerArea.innerHTML = `<h3 class="title">${firstPlayer.getName()}</h3>`;
+                    firstPlayerArea.innerHTML += `<br>`;
+                    firstPlayerArea.innerHTML += `<p class="record"><strong>👉 남은 횟수-${firstPlayer.getLeftCount()}, 현재 점수-${firstPlayer.getScore()}, 남은 힌트-${firstPlayer.getLeftHintCount()} 👯‍♀️</strong></p>`;    
+                }
+                
+                if (secondPlayer instanceof Player) {
+                    secondPlayerArea.innerHTML = `<h3 class="title">${secondPlayer.getName()}</h3>`
+                    secondPlayerArea.innerHTML += `<br>`;
+                    secondPlayerArea.innerHTML += `<p class="record"><strong>👉 남은 횟수-${secondPlayer.getLeftCount()}, 현재 점수-${secondPlayer.getScore()}, 남은 힌트-${secondPlayer.getLeftHintCount()} 👯‍♀️</strong></p>`;
+                }
             }
 
             // 앞면인 카드를 모두 뒷면으로 돌려줌 
@@ -452,18 +797,37 @@
             this.updateAllPlayerTag = function() {
                 const firstPlayerArea = document.getElementById("firstPlayerArea");
                 const secondPlayerArea = document.getElementById("secondPlayerArea");
-                firstPlayerArea.innerHTML = `<h3 class="title">${firstPlayer.getName()}</h3><p class="title"> 🎯 남은 횟수 ${firstPlayer.getLeftCount()} 점수는 ${firstPlayer.getScore()}</p>`;
-                secondPlayerArea.innerHTML = `<h3 class="title">${secondPlayer.getName()}</h3><p class="title"> 🎯 남은 횟수 ${secondPlayer.getLeftCount()} 점수는 ${secondPlayer.getScore()}</p>`;
+                if (firstPlayer instanceof Player) {
+                    firstPlayerArea.innerHTML = `<h3 class="title">${firstPlayer.getName()}</h3>`;
+                    firstPlayerArea.innerHTML += `<br>`;
+                    firstPlayerArea.innerHTML += `<p class="record"><strong>👉 남은 횟수-${firstPlayer.getLeftCount()}, 현재 점수-${firstPlayer.getScore()}, 남은 힌트-${firstPlayer.getLeftHintCount()} 👯‍♀️</strong></p>`;    
+                }
+                
+                if (secondPlayer instanceof Player) {
+                    secondPlayerArea.innerHTML = `<h3 class="title">${secondPlayer.getName()}</h3>`
+                    secondPlayerArea.innerHTML += `<br>`;
+                    secondPlayerArea.innerHTML += `<p class="record"><strong>👉 남은 횟수-${secondPlayer.getLeftCount()}, 현재 점수-${secondPlayer.getScore()}, 남은 힌트-${secondPlayer.getLeftHintCount()} 👯‍♀️</strong></p>`;
+                }
             }
 
             
             // 첫번째 플레이어를 현재 플레이어로 설정 
             this.setFirstPlayerOnCurrentPlayer = function() {
+                if (firstPlayer === null) {
+                    alert('첫번째 플레이어를 생성하고 "플레이어1 시작"버튼을 눌러주세요.💥');
+                    return;
+                }
+
                 currentPlayer = firstPlayer;
             }
 
             // 두번째 플레이어를 현재 플레이어로 설정 
             this.setSecondPlayerOnCurrentPlayer = function() {
+                if (secondPlayer === null) {
+                    alert('두번째 플레이어를 생성하고 "플레이어2 시작" 버튼을 눌러주새요.💥');
+                    return;
+                }
+
                 currentPlayer = secondPlayer;
             }
 
@@ -565,9 +929,9 @@
 
             // 모든 플레이어를 초기화 
             this.resetAllPlayer = function() {
-                alert("플레이어의 기록을 초기화합니다.💥")
-                firstPlayer = new Player("반항하고 싶어👨🏻‍🎤", 0, 5); // 첫번째 플레이어 저장 
-                secondPlayer = new Player("먹는게 최고지👩🏻‍🍳", 0, 5); // 두번째 플레이어 저장 
+                alert("플레이어의 기록을 초기화합니다.💥");
+                firstPlayer = null; 
+                secondPlayer = null; 
             }
         }
 
