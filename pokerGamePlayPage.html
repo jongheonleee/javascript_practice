@@ -249,72 +249,11 @@
 
                             // resetAllPlayer() : 모든 플레이어 초기화 
 
-        // 추가 기능 구현 및 객체 분할
-                // 1. GameHelper 게임 헬퍼 객체, 사용자와 소통하는 객체
-                    // 1-1. 룰을 설명 expainRule()✅
-
-                    // 1-2. 힌타를 줌
-                        // 사용자가 힌트 버튼을 클릭
-                            // 바깥 메서드에서 이 객체로 연결
-                            // giveHint() : 힌트를 주는 메서드, 랜덤으로 5장의 뒷면 카드 뽑음, 그리고 1초 동안 보여줌
-                                // 현재 플레이어의 힌트 갯수가 유효한지 확인
-                                    // 유효하지 않으면 종료
-                                
-                                // 랜덤으로 뒷면 카드 5개 뽑음
-                                // 앞면으로 돌리기 
-                                // 1초동안 유지
-                                // 현재 플레이어의 힌트 갯수 1 카운트 다운
-
-                    // clickHintButton()
-                        // giveHint()
-                            // if (!currentPlayer.isLeftHintCount()) 
-                                // alert("이미 모든 힌트를 소진했습니다.");
-                                // return;
-
-                            // deck.selectRandomSomeCard()
-                            // deck.showRandomSomeCard();
-                            // currentPlayer.decreaseLeftHintCount();
-
-                    // 1-3. 사용자로부터 닉네임, 게임 유효 횟수 ✅
-                        // 사용자가 닉네임 생성버튼 누름 
-                            // 바깥 메서드에서 이 객체로 연결
-                            // createPlayer() : 사용자로부터 닉네임을 입력 받는 메서드
-                                // 현재 생성된 플레이어 객체 상태 확인
-                                    // 2개, 종료
-                                    // 1개, 두번째 플레이어 정보로 입력
-                                    // 0개, 첫번째 플레이어 정보로 입력
-
-                                // 사용자가 입력한 닉네임과 유효 횟수 보관
-                                // 랜덤 아바타 생성해서 사용자가 입력한 닉네임과 결합
-                                // 플레이어 객체 생성(이때, 힌트 개수랑 점수는 고정값, 힌트 개수 : 3, 점수 : 0)
-                                // 생성하려고 플레이어에 저장
-
-                    // clickCreatePlayerButton()
-                        // createPlayer()
-                            // if (firstPlayer !== null && secondPlayer !== null) 
-                                // alert("이미 모든 플레이어가 생성되었습니다.");
-                                // return;
-
-                            // const userName, leftCount;
-                            // const avator = selectRandomAvator();
-                            // if (firstPlayer === null) firstPlayer = new Player(userName+avator, leftCount); // score = 0, leftHintCount = 3
-                            // else if (secondPlayer === null) secondPlayer = new Player(userName+avator, leftCount); // // score = 0, leftHintCount = 3
-
-                    // 1-4. 랜덤 아바타를 선택함 ✅
-                        // 위의 메서드가 호출될 때 이 메서드도 호출
-                            // selectRandomAvator() : 플레이어 닉네임 옆에 붙을 아바타 뽑기
-                                // 해당 객체에 저장된 아바타 배열
-                                // 랜덤으로 한개 선택 
-                                // 선택한 아바타 반환
-                        
-                        // selectRandomAvator() 
-                            // shuffleAllAvator()
-                            // const avator = avators[0];
-                            // return avator;
         // 전역 변수
         const gameModerator = new GameModerator();
         const gameHelper = new GameHelper();
         const deck = new Deck();
+        const gameResult = new GameResult();
         
         let firstPlayer = null;
         let secondPlayer = null;
@@ -325,13 +264,79 @@
                 deck.shuffle();
                 gameModerator.startGame();
         }
+
+        // 플레이어가 룰 설명 버튼을 누른 경우
+        function clickRuleButton() {
+            // 게임 헬퍼가 룰을 설명한다.
+            gameHelper.expalinRule();
+        }
+
+        // 플레이어가 힌트 버튼을 누른 경우
+        function clickHintButton() {
+            // 게임 헬퍼가 힌트를 준다.
+            gameHelper.giveHint();
+        }
+
+        // 사용자가 플레이어 생성 버튼을 누른 경우
+        function clickCreatePlayerButton(inputTagPosion) {
+            // 사용자가 입력한 닉네임을 저장하고 있는 input 태그 참조
+            const input = document.getElementById(inputTagPosion);
+            // 게임 헬퍼에게 넘겨주어 플레이어를 생성함 
+            gameHelper.createPlayer(input);
+        }
+                
         
+        // 사용자가 첫번째 플레이어의 게임 시작 버튼을 누른 경우 
+        function selectFirstPlayer() {
+            // 게임 진행자가 현재 플레이어를 첫 번째 플레이어로 설정 
+            gameModerator.setFirstPlayerOnCurrentPlayer(); 
+            // 게임 진행자가 게임판 업데이트함 
+            gameModerator.updateGame(); 
+            // 게임 시작 알림 메시지를 출력 
+            alert(`${gameModerator.getCurrentPlayerName()}의 게임을 시작합니다.🔊`);
+        }
+        
+        // 사용자가 두번째 플레이어의 게임 시작 버튼을 누른 경우 
+        function selectSecondPlayer() {
+            // 게임 진행자가 현재 플레이어를 두 번째 플레이어로 설정함 
+            gameModerator.setSecondPlayerOnCurrentPlayer(); 
+            // 게임 진행자가 게임판 업데이트함 
+            gameModerator.updateGame(); 
+            // 게임 시작 알림 메시지 출력 
+            alert(`${gameModerator.getCurrentPlayerName()}의 게임을 시작합니다.🔊`); 
+        }
+        
+        // 플레이어가 카드 태그를 선택한 경우
+        function selectCardTag(selectCardTag) {
+            // 게임 진행자가 적절히 처리해줌
+            gameModerator.occurPlayerSelectCard(selectCardTag);
+        }
+        
+        // 사용자가 결과 출력 버튼을 누른경우, 게임 매니저가 게임 결과 판단 
+        function getGameResult() {
+            // 게임 진행자는 게임 결과를 반환할 수 있는지 응답
+            const answer = gameModerator.getGameResult();
+            // 게임을 끝낸 경우 게임판 업데이트 
+            if (answer) {
+                // 플레이어 리셋 
+                gameModerator.resetAllPlayer();
+                // 게임 재시작 
+                gameModerator.startGame(); 
+            }
+        }
+        
+        // 사용자와 소통하며 사용자를 돕는 객체 ✅
         function GameHelper() {
+            // 랜덤 아바타 저장 
             const avators = ["🤹🏻‍♂️", "👨🏻‍🎤", "👩🏻‍🍳", "🦹🏻‍♂️", "🤵🏻‍♂️", "🧝🏻‍♀️", "🦸🏻‍♀️", "🧙🏻", "👰🏻‍♀️"];
             const NUMBER_OF_CARD = 52;
+            
+            // 난수 생성기 
             const randomGenerator = () => Math.floor(Math.random()*NUMBER_OF_CARD);
 
+            // 룰 설명 
             this.expalinRule = function() {
+                // 📌 밑에 룰 업데이트 해야함, 게임 룰 변경됨 
                 let message = "";
                 message += '안녕하세요"Poker Game 🎰"에 오신것을 환영합니다.'; 
                 message += ' 포커 게임을 시작하기 앞서 간단하게 룰을 설명하겠습니다.';
@@ -339,76 +344,92 @@
                 message += ' 또한, 플레이어는 한판당 2개의 카드를 선택하면됩니다.';
                 message += ' 이때, 카드의 숫자, 모양, 색깔이 판단 기준이 되며 3중에 1개라도 맞추면 1점을 획득하고 2개를 맞추면 2점을 획득하며 두 카드는 앞면 상태로 놓여집니다.';
                 message += ' 하지만 모두 못 맞출 경우 카드는 다시 뒤집힙니다. 그리고 모든 플레이어가 모두 플레이한 경우 게임 결과 출력 버튼을 통해 게임 결과를 확인하실 수 있습니다.';
+
+                // 룰 메시지 보여주기 
                 alert(message);
             }
 
+            // 플레이어 생성 
             this.createPlayer = function(input) {
+                // 이미 모든 플레이어가 생성된 경우 
                 if (firstPlayer !== null && secondPlayer !== null ) {
                     alert("이미 모든 플레이어가 생성되었습니다.💥");
+                    gameResult.createAllMessage();
                     return;
                 }
 
+                // 사용자가 입력한 닉네임 가져오기, 없으면 "익명플레이어"로 설정 
                 const userName = input.value ? input.value : "익명플레이어";
+                // 랜덤 아바타 뽑기
                 const avator = this.selectRandomAvator();
 
+                // 첫 번째 플레이어가 없는 경우, 첫 번째 플레이어로 등록 
                 if (firstPlayer === null) {
-                    firstPlayer = new Player(avator+userName, 7, 3);
+                    firstPlayer = new Player(avator+userName);
                     alert(`첫번째 플레이어 "${firstPlayer.getName()}" 가 생성되었습니다.`);
-                }else if (secondPlayer === null) {
-                    secondPlayer = new Player(avator+userName, 7, 3);
+                }
+                // 두 번째 플레이어가 없는 경우, 두 번째 플레이어로 등록
+                else if (secondPlayer === null) {
+                    secondPlayer = new Player(avator+userName);
                     alert(`두번째 플레이어 "${secondPlayer.getName()}" 가 생성되었습니다.`);
                 }
-                gameModerator.appendAllPlayerTag();
+
+                // 게임 진행자가 플레이어 영역 업데이트 
+                gameModerator.updateAllPlayerTag();
             }
 
+            // 랜덤 아바타를 뽑음 
             this.selectRandomAvator = function() {
+                // 아바타 배열 섞기 
                 this.suffleAllAvator();
                 return avators[0];
             }
 
+            // 아바타 배열 섞기 
             this.suffleAllAvator = function() {
                 for (let i=0; i<100; i++) {
-                    avators.sort(() => Math.random()-0.5);
+                    avators.sort(randomGenerator);
                 }
             }
 
+            // 플레이어에게 힌트 보여주기 
             this.giveHint = function() {
+                // 현재 플레이어가 설정되지 않은 경우 
                 if (currentPlayer === null) {
                     alert("현재 플레이어가 설정되지 않았거나 플레이어를 생성하지 않았습니다. 다시 확인하고 플레이 해주세요.💥");
                     return;
                 }
+                // 덱에서 힌트 카드 보여주기 
                 deck.showCardForHint();
+                // 게임 진행자가 플레이어 영역 업데이트하기 
+                gameModerator.updateAllPlayerTag();
             }
         }
-    
 
-                // 3. Deck 카드 덱 객체, 카드 묶음 객체, 여기서 카드 일련 과정 관리 
-                    // 생성된 카드 객체 저장
-                    // 현재 플레이어가 선택한 2개의 카드 저장
-                    // 카드 이미지 숫자 저장
-                        // 3-1. 카드 이미지 숫자 섞기 shuffleAllCardImageNumber()
-                        
-                        // 3-2. 카드 객체 생성 createAllCard()
-                        // 3-3. 랜덤으로 뒷면인 5개의 카드를 뽑음 selectRandomCard()
-                        // 3-4. 랜덤으로 뽑은 카드를 1~2초 동안 보여줌 showCardForHint()
         function Deck() {
+
             const FIRTS_CARD_IMAGE_NUMBER = 0;
             const LAST_CARD_IMAGE_NUMBER = 51;
             const NUMBER_OF_CARD = 52;
-            const cardAllImageNumber = [];
-            const selectedCardForHint = [];
+            const LAST_CARD_INDEX = NUMBER_OF_CARD-1;
             const MAX_HINT_COUNT = 3;
-            const curretPlayerSelectedTwoCard = [];
+
+            const cardAllImageNumber = [];
             const cards = [];
-            const randomGenerator = () => Math.floor(Math.random()*NUMBER_OF_CARD);
+            const selectedCardForHint = [];
+            const currentPlayerTwoSelectedCard = [];
+
             let cardIndex = 0;
-            const LAST_CARD_INDEX = NUMBER_OF_CARD;
+            let cardForHintIndex = 0;
+            let currentPlayerSelectedCardIndex = 0;
+
+            const randomGenerator = () => Math.floor(Math.random()*NUMBER_OF_CARD);
 
             for (let i=FIRTS_CARD_IMAGE_NUMBER; i<=LAST_CARD_IMAGE_NUMBER; i++) {
                 cardAllImageNumber.push(i);
             }
 
-            this.shuffle = function() {
+            this.createDeck = function() {
                 this.shuffleAllCardImageNumber();
                 this.createAllCard();
             }
@@ -472,6 +493,45 @@
                 return true;
             }
 
+            this.getLengthOfCardForHint = function() {
+                return selectedCardForHint.length;
+            }
+
+            this.indexOfCardForHint = function(index) {
+                if (index >= this.getLengthOfCardForHint()) {
+                    alert("잘못된 인덱스 범위입니다.");
+                    return null;
+                }
+
+                return selectedCardForHint[index];
+            }
+
+            this.getLengthOfCurrentPlayerSelectedCard = function() {
+                return currentPlayerTwoSelectedCard.length;
+            }
+
+            this.indexOfCurrentPlayerSelectedCard = function(index) {
+                if (index >= this.getLengthOfCurrentPlayerSelectedCard()) {
+                    alert("잘못된 인덱스 범위입니다.");
+                    return null;
+                }
+
+                return currentPlayerTwoSelectedCard[index];
+            }
+
+            this.getLengthOfAllCard = function() {
+                return cards.length;
+            }
+
+            this.indexOfCard = function(index) {
+                if (index >= this.getLengthOfAllCard()){
+                    alert("잘못된 인덱스 범위입니다.");
+                    return null;
+                }
+
+                return cards[index];
+            }
+
             this.selectCardInOrder = function() {
                 if (cardIndex <= LAST_CARD_IMAGE_NUMBER) {
                     return cards[cardIndex++];
@@ -481,74 +541,81 @@
                 return cards[cardIndex++];
             }
 
-            this.isSelectAllCardInOrder = function() {
-                if (cardIndex >= LAST_CARD_INDEX) {
-                    cardIndex = 0;
-                    return true;
+            this.selectCurrentPlayerTwoSelectedCard = function() {
+                if (currentPlayerTwoSelectedCard.length === 0) {
+                    alert("선택한 카드가 없습니다.");
+                    return null;
                 }
 
-                return false;
+                const card = currentPlayerTwoSelectedCard[Math.floor(currentPlayerSelectedCardIndex/currentPlayerTwoSelectedCard.length)];
+                currentPlayerSelectedCardIndex++;
+                return card;
             }
 
-        }
 
-        function clickRuleButton() {
-            gameHelper.expalinRule();
-        }
 
-        function clickHintButton() {
-            gameHelper.giveHint();
-        }
+            this.shuffle = function() {
+                if (cards.length === 0) {
+                    this.createDeck();
+                }
 
-        function clickCreatePlayerButton(inputTagPosion) {
-            const input = document.getElementById(inputTagPosion);
-            gameHelper.createPlayer(input);
-        }
-                
-                // 2. GameMessage 게임 메시지 객체, 게임 상에 메시지 보여주는 객체
-                    // GameModerator, GameHelper 가 사용할 메시지 보관소
-                    // 2-1. GameModerator가 필요한 메시지를 갖다 씀
-                    // 2-2. GameHelper가 필요한 메시지를 갖다 씀 
+                this.initAllCard();
 
-                // 3. Deck 카드 덱 객체, 카드 묶음 객체, 여기서 카드 일련 과정 관리 
-                    // 생성된 카드 객체 저장
-                    // 현재 플레이어가 선택한 2개의 카드 저장
-                    // 카드 이미지 숫자 저장
-                    // 3-1. 카드 이미지 숫자 섞기
-                    // 3-2. 카드 객체 생성
-                    // 3-3. 랜덤으로 뒷면인 5개의 카드를 뽑음
-                    // 3-4. 랜덤으로 뽑은 카드를 1~2초 동안 보여줌
+                for (let i=0; i<100; i++) {
+                    cards.sort(() => Math.random() - 0.5);
+                }
+            }
 
-                    // 3-5. GameModerator에 있는 메서드 이쪽으로 옮기기
-        
-        // 사용자가 첫번째 플레이어의 게임 시작 버튼을 누른 경우 
-        function selectFirstPlayer() {
-            gameModerator.setFirstPlayerOnCurrentPlayer(); // 현재 플레이어를 첫번째 플레이어로 설정
-            gameModerator.updateGame(); // 게임판 업데이트 
-            alert(`${gameModerator.getCurrentPlayerName()}의 게임을 시작합니다.🔊`); // 게임 시작 알림 메시지 출력 
-        }
-        
-        // 사용자가 두번째 플레이어의 게임 시작 버튼을 누른 경우 
-        function selectSecondPlayer() {
-            gameModerator.setSecondPlayerOnCurrentPlayer(); // 현재 플레이어를 두번째 플레이어로 설정 
-            gameModerator.updateGame(); // 게임판 업데이트 
-            alert(`${gameModerator.getCurrentPlayerName()}의 게임을 시작합니다.🔊`); // 게임 시작 알림 메시지 출력 
-        }
-        
-        // 사용자가 특정 태그를 선택하면, 게임 매니저가 처리 
-        function selectCardTag(selectCardTag) {
-            gameModerator.occurPlayerSelectCard(selectCardTag);
-        }
-        
-        // 사용자가 결과 출력 버튼을 누른경우, 게임 매니저가 게임 결과 판단 
-        function getGameResult() {
-            const answer = gameModerator.getGameResult();
-            if (answer) {
-                gameModerator.resetAllPlayer();
-                gameModerator.startGame(); 
+            this.initAllCard = function() {
+                for (card of cards) {
+                    if (card.isFront()) {
+                        card.flip();
+                    }
+                }
+            }
+
+            this.connectCardToCardImageNumber = function() {
+                cardAllImageNumber.splice(0);
+                for (card of cards) {
+                    cardAllImageNumber.push(card.getCardImageNumber());
+                }
+            }
+
+            this.initDeck = function() {
+                this.shuffle();
+                this.initAllCard();
+                this.connectCardToCardImageNumber();
+                selectedCardForHint.splice(0);
+                currentPlayerTwoSelectedCard.splice(0);
+            }
+            
+            this.findCard = function(cardImageNumber){
+                for (card of cards) {
+                    if (card.isSameCardImageNumber(cardImageNumber)) {
+                        return card;
+                    }
+                }
+            }
+
+            this.isCurrentPlayerSelectedTwoCard = function() {
+                return currentPlayerTwoSelectedCard.length === 2 ? true : false;
+            }
+
+            this.pushCurrentPlayerSelectedCard = function(selectedCard) {
+                if (this.isCurrentPlayerSelectedTwoCard()) return;
+
+                currentPlayerTwoSelectedCard.push(selectedCard);
+            }
+
+            this.shiftCurrentPlayerSelectedCard = function() {
+                if (currentPlayerTwoSelectedCard.length  === 0) return;
+                return currentPlayerTwoSelectedCard.shift();
+            }
+
+            this.isHintCard = function() {
+                return selectedCardForHint.length > 0 ? true : false;
             }
         }
-
         // 1. 카드 객체 : 카드의 상태(앞면, 뒷면)과 카드 숫자 이미지를 저장, 그리고 그와 관련된 작업 묶음 
         function Card(cardImageNumber = 0, state = false) {
             var cardImageNumber = cardImageNumber; // 카드의 이미지 숫자 
@@ -580,7 +647,7 @@
             }
 
             // 매개변수로 전달 받은 값과 얼마나 맞았는지 계산해서 반환 
-            this.calculateSmaeCount = function(otherNumber, otherColor, otherShape) {
+            this.calculateSameCount = function(otherNumber, otherColor, otherShape) {
                 return this.isSameNumber(otherNumber) + this.isSameColor(otherColor) + this.isSameShape(otherShape);
             }
 
@@ -614,7 +681,7 @@
         function Player(name = "anonymous") {
             var name = name; // 이름 
             var score = 0; // 점수 
-            var leftCount = 7; // 게임 횟수
+            var leftCount = 100; // 게임 횟수
             var leftHintCount = 3; // 힌트 횟수  
 
             // 자신이 승자인지, 패자인지, 무승부인지 판단(-1 : 자기가 이김, 0 : 무승부, 1 : 상대가 이김)
@@ -673,34 +740,52 @@
 
         }
 
+        // 게임 결과 저장 객체 :
+        function GameResult() {
+            var map = new Map();
+
+            this.createAllMessage = function() {
+                if (firstPlayer instanceof Player && secondPlayer instanceof Player) {
+                    map.set(-1, `"${firstPlayer.getName()}"이 이겼습니다.🔊`); 
+                    map.set(0, `"${firstPlayer.getName()}"와 "${secondPlayer.getName()}"의 점수가 같습니다. 무승부입니다.🔊`);
+                    map.set(1, `${secondPlayer.getName()}가 이겼습니다.🔊`);
+                    return;
+                }
+            }
+
+            
+            this.translateGameMessage = function(gameResult) {
+                return map.get(gameResult);
+            }
+        }
+
         // 3. 게임 매니저 객체 : 카드객체와 플레이어 객체를 포함해서, 전체 프로그램의 흐름을 담당
         function GameModerator() {
-            var cardImageNumbers = []; // 카드 이미지 숫자 저장  
-            const FIRST_CARD_IMAGE_NUMBER = 0;
-            const LAST_CARD_IMAGE_NUMBER = 51;
-            for (let number = FIRST_CARD_IMAGE_NUMBER; number <= LAST_CARD_IMAGE_NUMBER; number++) {
-                cardImageNumbers.push(number);
-            }
-            var cards = []; // 생성된 카드 객체를 저장  
+
             var currentPlayerTwoSelectedCard = []; // 현재 플레이어가 선택한 카드를 저장 
             var gameResultMessage = new Map(); // 게임 결과 맵에 저장 
 
 
             // 게임이 시작했을 때 초기화면과 각 객체 상태 구성
             this.startGame = function() {
-                this.shuffleAllCardImageNumber(); // 카드 이미지 숫자 섞기
-                this.createAllCard(); // 카드 객체 생성해서 배열에 담기
-                this.createGameResultMessage(); // 게임 메시지 저장
-                this.appendAllCardTag(); // 카드 태그 생성해서 html 문서에 추가
-                this.appendAllPlayerTag(); // 플레이어 태그 생성해서 html 문서에 추가 
+                // 덱에 있는 카드 섞기
+                deck.shuffle();
+                // 게임 메시지 셍성
+                gameResult.createAllMessage();
+                // 모든 카드 태그 생성해서 추가
+                this.updateAllCardTag();
+                // 모든 플레이어 태그 붙이기
+                this.updateAllPlayerTag();
             }
 
             // 게임판 업데이트 
             this.updateGame = function() {
-                this.hideAllFrontCard(); // 앞면인 카드 모두 다 뒤집기 
-                this.shuffleAllCard(); // 카드 객체 배열 섞기
-                this.appendAllCardTag(); // 카드 태그 생성해서 붙이기 
-                this.updateAllPlayerTag(); // 플레이어 태그 업데이트
+                // 덱에 있는 카드 다시 섞기
+                deck.shuffle();
+                // 카드 태그 생성해서 붙이기
+                this.updateAllCardTag();
+                // 플레이어 태그 업데이트하기
+                this.updateAllPlayerTag();
             }
 
             this.updateGameBoard = function() {
@@ -716,21 +801,6 @@
                 }
             }
 
-            // 모든 카드 이미지 숫자를 섞음 
-            this.shuffleAllCardImageNumber = function() {
-                for (let i=0; i<100; i++) {
-                    cardImageNumbers.sort(() => Math.random() - 0.5);
-                }
-            }
-
-            // 모든 카드 객체를 생성 
-            this.createAllCard = function() {
-                cards.splice("");
-                for (cardImageNumber of cardImageNumbers) {
-                    cards.push(new Card(cardImageNumber));
-                }
-            }
-
 
             // 모든 게임 결과 메시지를 생성해서 맵에 게임 결과 숫자와 매핑하여 저장 
             this.createGameResultMessage = function() {
@@ -742,61 +812,31 @@
             }
 
             // 모든 카드 객체의 태그를 생성해서 추가 
-            this.appendAllCardTag = function() {
+            this.updateAllCardTag = function() {
                 const cardArea = document.getElementById("cardArea");
                 cardArea.innerHTML = "";
-                while (!deck.isSelectAllCardInOrder()) {
-                    const card = deck.selectCardInOrder();
+
+                for (let i=0; i<deck.getLengthOfAllCard(); i++) {
+                    const card = deck.indexOfCard(i);
                     const imgTag = document.createElement("img");
+
                     if (card.isFront()) {
                         imgTag.setAttribute("src", `img/card_img/${card.getCardImageNumber()}.png`);
                     } else {
                         imgTag.setAttribute("src", `img/card_img/back.png`);
                     }
+
                     imgTag.setAttribute("data-number", card.getCardImageNumber());
                     imgTag.setAttribute("onclick", "selectCardTag(this)");
                     cardArea.appendChild(imgTag);
                 }
             }
 
-            // 모든 플레이어 객체의 태그를 생성해서 추가 
-            this.appendAllPlayerTag = function() {
-                const firstPlayerArea = document.getElementById("firstPlayerArea");
-                const secondPlayerArea = document.getElementById("secondPlayerArea");
-                if (firstPlayer instanceof Player) {
-                    firstPlayerArea.innerHTML = `<h3 class="title">${firstPlayer.getName()}</h3>`;
-                    firstPlayerArea.innerHTML += `<br>`;
-                    firstPlayerArea.innerHTML += `<p class="record"><strong>👉 남은 횟수-${firstPlayer.getLeftCount()}, 현재 점수-${firstPlayer.getScore()}, 남은 힌트-${firstPlayer.getLeftHintCount()} 👯‍♀️</strong></p>`;    
-                }
-                
-                if (secondPlayer instanceof Player) {
-                    secondPlayerArea.innerHTML = `<h3 class="title">${secondPlayer.getName()}</h3>`
-                    secondPlayerArea.innerHTML += `<br>`;
-                    secondPlayerArea.innerHTML += `<p class="record"><strong>👉 남은 횟수-${secondPlayer.getLeftCount()}, 현재 점수-${secondPlayer.getScore()}, 남은 힌트-${secondPlayer.getLeftHintCount()} 👯‍♀️</strong></p>`;
-                }
-            }
-
-            // 앞면인 카드를 모두 뒷면으로 돌려줌 
-            this.hideAllFrontCard = function() {
-                for (card of cards) {
-                    if (card.isFront()) {
-                        card.flip();
-                    }
-                }
-            }
-
-            // 모든 카드 객체를 섞음 
-            this.shuffleAllCard = function() {
-                for (let i = 0; i < 100; i++) {
-                    cards.sort(() => Math.random() - 0.5);
-                }
-            }
-
-
             // 모든 플레이어의 태그 업데이트 
             this.updateAllPlayerTag = function() {
                 const firstPlayerArea = document.getElementById("firstPlayerArea");
                 const secondPlayerArea = document.getElementById("secondPlayerArea");
+
                 if (firstPlayer instanceof Player) {
                     firstPlayerArea.innerHTML = `<h3 class="title">${firstPlayer.getName()}</h3>`;
                     firstPlayerArea.innerHTML += `<br>`;
@@ -833,66 +873,129 @@
 
             // 현재 플레이어가 카드를 선택했을 때 처리해줘야 할 작업 
             this.occurPlayerSelectCard = function(selectedCardTag) {
-                if (!(currentPlayer instanceof Player)) { // 현재 플레이어 객체가 설정되지 않은 경우 
+                // 현재 플레이어 객체가 설정되지 않은 경우 
+                if (!(currentPlayer instanceof Player)) { 
+                    // 현재 상태 알려주기 
                     alert("플레이어 시작 버튼을 누르고 게임을 진행하세요.🔊");
                     return;
                 }
 
-                if (!currentPlayer.isLeftCount()) { // 현재 플레이어가 모든 횟수를 다 소진한 경우
+                // 현재 플레이어가 모든 횟수를 다 소진한 경우
+                if (!currentPlayer.isLeftCount()) { 
+                    // 현재 상태 알려주기 
                     alert(`"${currentPlayer.getName()}"의 게임 횟수가 ${currentPlayer.getLeftCount()}입니다.🔊`);
                     alert(`"${currentPlayer.getName()}"의 점수는 ${currentPlayer.getScore()}입니다.🔊`);
+                    // 태그 업데이트 
                     this.updateAllPlayerTag();
                     return;
                 }
 
-                if (currentPlayerTwoSelectedCard.length === 2) { // 두개를 이미 선택했으면 판단하기
-                    const amount = this.getSameAmountBetweenTwoSelectedCard();
-                    currentPlayer.addScore(amount); // 현재 플레이어에 점수 추가 
-                    currentPlayer.decreaseCount(); // 현재 플레이어 게임 횟수 1 감소
-                    this.updateAllPlayerTag(); // 각 플레이어 기록 업데이트 
+                // 플레이어가 선택한 태그에 대응되는 카드 가져옴 
+                const currentPlayerSelectedCard = this.findSelectedCardByTag(selectedCardTag);
+                if (currentPlayerSelectedCard.isFront()) {
+                    // 앞면인 경우 건너뛰기
+                    return; 
+                }
+
+                // 첫번째 카드와 힌트 카드 비교
+                let sameCountForFirstSelectedCardWithHint = 0;
+                // 두번째 카드와 힌트 카드 비교 
+                let sameCountForSecondSelectecCardWithHint = 0;
+                // 힌트 카드와 이전에 선택한 카드 먼저 비교 
+                for (let i=0; i<deck.getLengthOfCardForHint(); i++) {
+                    // 힌트 카드 하나씩 참조
+                    const cardForHint = deck.indexOfCardForHint(i);
+                    // 현재 플레이어가 선택한 카드 하나씩 참조 
+                    for (let j=0; j<deck.getLengthOfCurrentPlayerSelectedCard(); j++) {
+                        const selectedCard = deck.indexOfCard(j);
+                        // 서로 일치하는 갯수 카운트 
+                        const amount = selectedCard.calculateSameCount(cardForHint.getNumber(), cardForHint.getColor(), cardForHint.getShape());
+                        
+                        // 첫 번째 카드인 경우 "첫 번째 카드와 힌트 카드 비교"에 기록
+                        if (j === 0) {
+                            sameCountForFirstSelectedCardWithHint += amount;
+                        } 
+                        // 두 번째 카드인 경우 "두 번째 카드와 힌트 카드 비교"에 기록
+                        else {
+                            sameCountForSecondSelectecCardWithHint += amount;
+                        }
+
+                        // 스코어 업데이트
+                        currentPlayer.addScore(amount);
+                        // 태그 업데이트 
+                        this.updateAllPlayerTag();
+                    }
+                }
+
+                // 두개의 카드를 선택했으면 서로 비교 
+                if (deck.isCurrentPlayerSelectedTwoCard()) {
+                    // 두개의 카드 서로 일치하는 갯수 카운트 및 뒤집기 
+                    const amount = this.getSameAmountBetweenTwoSelectedCard(sameCountForFirstSelectedCardWithHint, sameCountForSecondSelectecCardWithHint);
+                    // 스코어 업데이트 
+                    currentPlayer.addScore(amount);
+                    // 판수 업데이트 
+                    currentPlayer.decreaseCount();
+                    // 태그 업데이트 
+                    this.updateAllPlayerTag();
                     return;
                 }
 
-                const currentPlayerSelectedCard = this.findSelectedCardByTag(selectedCardTag);
-                if (currentPlayerSelectedCard.isFront()) return; // 앞면인거막아버리기 
-                currentPlayerTwoSelectedCard.push(currentPlayerSelectedCard);
+                // 카드 객체에 현재 플레이어가 선택한 카드 저장 
+                deck.pushCurrentPlayerSelectedCard(currentPlayerSelectedCard);
+                // 선택한 카드 보여주기
                 this.showSelectedCard(selectedCardTag);
             }
 
             // 현재 플레이어가 선택한 2개의 카드 중에서 무엇이 맞는지 숫자로 반환(숫자, 색깔, 도형)
-            this.getSameAmountBetweenTwoSelectedCard = function() {
-                const firstSelectedCard = currentPlayerTwoSelectedCard.shift();
-                const secondSelectedCard = currentPlayerTwoSelectedCard.shift();
-                const amount = firstSelectedCard.calculateSmaeCount(secondSelectedCard.getNumber(), secondSelectedCard.getColor(), secondSelectedCard.getShape());
-                    
-                if (amount === 0) { // 숫자, 컬러, 모양 다 안맞은 경우 뒷면으로 돌리기 
-                    const cardAreaChildren = document.getElementById("cardArea").children; // 해당 카드 객체에 해당하는 태그의 속성 업데이트(뒷면으로 설정)
-                    firstSelectedCard.flip(); // 첫번째 카드 뒤집기 
-                    secondSelectedCard.flip(); // 두번째 카드 뒤집기 
-                    for (child of cardAreaChildren) {
-                        if (firstSelectedCard.isSameCardImageNumber(parseInt(child.getAttribute("data-number"))) || secondSelectedCard.isSameCardImageNumber(parseInt(child.getAttribute("data-number")))) {
-                            child.setAttribute("src", `img/card_img/back.png`);
-                        } 
+            this.getSameAmountBetweenTwoSelectedCard = function(sameAmountWithHintForFirstCard, sameAmountWithHintForSecondCard) {
+                const firstSelectedCard = deck.shiftCurrentPlayerSelectedCard();
+                const secondSelectedCard = deck.shiftCurrentPlayerSelectedCard();
+                const amount = firstSelectedCard.calculateSameCount(secondSelectedCard.getNumber(), secondSelectedCard.getColor(), secondSelectedCard.getShape());
+                const cardAreaChildren = document.getElementById("cardArea").children; // 해당 카드 객체에 해당하는 태그의 속성 업데이트(뒷면으로 설정)    
+
+                // 선택한 두 카드의 숫자, 컬러, 모양 안 맞은 경우
+                if (amount === 0) { 
+                    // 모든 힌트 카드와 선택한 두카드가 서로 일치하는게 하나도 없을 때, 모두 뒤집기
+                    if (sameAmountWithHintForFirstCard === 0 && sameAmountWithHintForSecondCard === 0) {
+                        firstSelectedCard.flip(); // 첫번째 카드 뒤집기 
+                        secondSelectedCard.flip(); // 두번째 카드 뒤집기 
+                        for (child of cardAreaChildren) {
+                            if (firstSelectedCard.isSameCardImageNumber(parseInt(child.getAttribute("data-number"))) || secondSelectedCard.isSameCardImageNumber(parseInt(child.getAttribute("data-number")))) {
+                                child.setAttribute("src", `img/card_img/back.png`);
+                            } 
+                        }
+                    } 
+                    // 모든 힌트 카드와 선택한 두 번째 카드가 서로 일치하는 게 없을 때, 두 번째 카드만 뒤집기
+                    else if (sameAmountWithHintForFirstCard !== 0 && sameAmountWithHintForSecondCard === 0) {
+                        secondSelectedCard.flip();
+                        for (child of cardAreaChildren) {
+                            if (secondSelectedCard.isSameCardImageNumber(parseInt(child.getAttribute("data-number")))) {
+                                child.setAttribute("src", `img/card_img/back.png`);
+                            }
+                        }
                     }
-                }
-            
+                    // 모든 힌트 카드와 선택한 첫 번째 카드가 서로 일치하는 게 없을 때, 첫 번째 카드만 뒤집기
+                    else if (sameAmountWithHintForFirstCard === 0 && sameAmountWithHintForSecondCard !== 0) {
+                        firstSelectedCard.flip();
+                        for (child of cardAreaChildren) {
+                            if (firstSelectedCard.isSameCardImageNumber(parseInt(child.getAttribute("data-number")))) {
+                                child.setAttribute("src", `img/card_img/back.png`);
+                            }
+                        }
+                    }
+                } 
+                
+                // 두 카드가 일치하는 갯수 반환 
                 return amount;
             }
+
 
             // 선택한 태그와 매칭되는 카드 객체 찾기 
             this.findSelectedCardByTag = function(selectedCardTag) {
                 const selectedCardImageNumber = parseInt(selectedCardTag.getAttribute("data-number"));
-                
-                let currentPlayerSelectedCard = null;
-                for (card of cards) {
-                    if (card.isSameCardImageNumber(selectedCardImageNumber)) {
-                        currentPlayerSelectedCard = card;
-                        break;
-                    }
-                }
-
-                return currentPlayerSelectedCard;
+                return deck.findCard(selectedCardImageNumber);
             }
+
 
             // 선택한 카드를 화면에 보여줌 
             this.showSelectedCard = function(selectedCardTag) {
