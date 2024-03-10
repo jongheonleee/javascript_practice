@@ -330,7 +330,7 @@
             // 랜덤 아바타 저장 
             const avators = ["🤹🏻‍♂️", "👨🏻‍🎤", "👩🏻‍🍳", "🦹🏻‍♂️", "🤵🏻‍♂️", "🧝🏻‍♀️", "🦸🏻‍♀️", "🧙🏻", "👰🏻‍♀️"];
             const NUMBER_OF_CARD = 52;
-            
+
             // 난수 생성기 
             const randomGenerator = () => Math.floor(Math.random()*NUMBER_OF_CARD);
 
@@ -681,7 +681,7 @@
         function Player(name = "anonymous") {
             var name = name; // 이름 
             var score = 0; // 점수 
-            var leftCount = 100; // 게임 횟수
+            var leftCount = 10; // 게임 횟수
             var leftHintCount = 3; // 힌트 횟수  
 
             // 자신이 승자인지, 패자인지, 무승부인지 판단(-1 : 자기가 이김, 0 : 무승부, 1 : 상대가 이김)
@@ -755,7 +755,7 @@
 
             
             this.translateGameMessage = function(gameResult) {
-                return map.get(gameResult);
+                return map.get(parseInt(gameResult));
             }
         }
 
@@ -1021,7 +1021,12 @@
 
             // 게임 결과 메시지로 발표 
             this.notifyGameResult = function(result) {
-                const resultMessage = gameResultMessage.get(result);
+                const resultMessage = gameResult.translateGameMessage(result);
+                
+                if (firstPlayer !== null && secondPlayer !== null) {
+                    gameResult.createAllMessage();
+                }
+
                 alert(resultMessage);
             }
 
