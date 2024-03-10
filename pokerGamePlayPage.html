@@ -388,7 +388,7 @@
             // 아바타 배열 섞기 
             this.suffleAllAvator = function() {
                 for (let i=0; i<100; i++) {
-                    avators.sort(randomGenerator);
+                    avators.sort(() => Math.random() - 0.5);
                 }
             }
 
@@ -1021,11 +1021,12 @@
 
             // 게임 결과 메시지로 발표 
             this.notifyGameResult = function(result) {
-                const resultMessage = gameResult.translateGameMessage(result);
-                
                 if (firstPlayer !== null && secondPlayer !== null) {
                     gameResult.createAllMessage();
                 }
+
+                const resultMessage = gameResult.translateGameMessage(result);
+                
 
                 alert(resultMessage);
             }
