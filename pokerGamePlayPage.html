@@ -273,8 +273,8 @@
 
 
         // 전역 변수
-        const gameModerator = new GameModerator();
         const gameHelper = new GameHelper();
+        const gameModerator = new GameModerator();
         const deck = new Deck();
         const gameMessage = new GameMessage();
         
@@ -347,82 +347,69 @@
                 gameModerator.startGame(); 
             }
         }
-        
-        // 사용자와 소통하며 사용자를 돕는 객체 ✅
-        function GameHelper() {
-            // 랜덤 아바타 저장 
-            const avators = ["🤹🏻‍♂️", "👨🏻‍🎤", "👩🏻‍🍳", "🦹🏻‍♂️", "🤵🏻‍♂️", "🧝🏻‍♀️", "🦸🏻‍♀️", "🧙🏻", "👰🏻‍♀️"];
-            // 카드 개수 
-            const NUMBER_OF_CARD = 52;
 
-            // 난수 생성기 
-            const randomGenerator = () => Math.floor(Math.random()*NUMBER_OF_CARD);
+        // 1. 카드 객체 : 카드의 상태(앞면, 뒷면)과 카드 숫자 이미지를 저장, 그리고 그와 관련된 작업 묶음 ✅
+        function Card(cardImageNumber = 0, state = false) {
+            var cardImageNumber = cardImageNumber; // 카드의 이미지 숫자 
+            var state = state; // 카드의 상태값(앞면, 뒷면)
 
-            // 룰 설명 
-            this.explainRule = function() {
-                // 📌 밑에 룰 업데이트 해야함, 게임 룰 변경됨 
-                const ruleMessage = gameMessage.getGameRule();
-                // 룰 메시지 보여주기 
-                alert(ruleMessage);
+            // 카드가 앞면인지 응답
+            this.isFront = function() {
+                return state;
             }
 
-            // 플레이어 생성 
-            this.createPlayer = function(input) {
-                // 이미 모든 플레이어가 생성된 경우 
-                if (firstPlayer !== null && secondPlayer !== null ) {
-                    alert("이미 모든 플레이어가 생성되었습니다.💥");
-                    gameMessage.createAllMessage();
-                    return;
-                }
-
-                // 사용자가 입력한 닉네임 가져오기, 없으면 "익명플레이어"로 설정 
-                const userName = input.value ? input.value : "익명플레이어";
-                // 랜덤 아바타 뽑기
-                const avator = this.selectRandomAvator();
-
-                // 첫 번째 플레이어가 없는 경우, 첫 번째 플레이어로 등록 
-                if (firstPlayer === null) {
-                    firstPlayer = new Player(avator+userName);
-                    alert(`첫번째 플레이어 "${firstPlayer.getName()}" 가 생성되었습니다.`);
-                }
-                // 두 번째 플레이어가 없는 경우, 두 번째 플레이어로 등록
-                else if (secondPlayer === null) {
-                    secondPlayer = new Player(avator+userName);
-                    alert(`두번째 플레이어 "${secondPlayer.getName()}" 가 생성되었습니다.`);
-                }
-
-                // 게임 진행자가 플레이어 영역 업데이트 
-                gameModerator.updateAllPlayerTag();
+            // 카드의 숫자 추출 
+            this.getNumber = function() {
+                return cardImageNumber % 13; 
             }
 
-            // 랜덤 아바타를 뽑음 
-            this.selectRandomAvator = function() {
-                // 아바타 배열 섞기 
-                this.suffleAllAvator();
-                return avators[0];
+            // 카드의 모양 추출 
+            this.getShape = function() {
+                return Math.floor(cardImageNumber/13); 
             }
 
-            // 아바타 배열 섞기 
-            this.suffleAllAvator = function() {
-                for (let i=0; i<100; i++) {
-                    avators.sort(() => Math.random() - 0.5);
-                }
+            // 카드의 색깔 추출  
+            this.getColor = function() {
+                return Math.floor(cardImageNumber/13)%2 === 0 ? "red" : "black";
             }
 
-            // 플레이어에게 힌트 보여주기 
-            this.giveHint = function() {
-                // 현재 플레이어가 설정되지 않은 경우 
-                if (currentPlayer === null) {
-                    alert("현재 플레이어가 설정되지 않았거나 플레이어를 생성하지 않았습니다. 다시 확인하고 플레이 해주세요.💥");
-                    return;
-                }
-                // 덱에서 힌트 카드 보여주기 
-                deck.showCardForHint();
-                // 게임 진행자가 플레이어 영역 업데이트하기 
-                gameModerator.updateAllPlayerTag();
+            // 카드의 이미지 숫자 반환 
+            this.getCardImageNumber = function() {
+                return cardImageNumber;
+            }
+
+            // 매개변수로 전달 받은 값과 얼마나 맞았는지 계산해서 반환 
+            this.calculateSameCount = function(otherNumber, otherColor, otherShape) {
+                return this.isSameNumber(otherNumber) + this.isSameColor(otherColor) + this.isSameShape(otherShape);
+            }
+
+            // 매개변수로 전달 받은 다른 카드의 숫자와 일치하는지 판단 
+            this.isSameNumber = function(otherNumber) {
+                return this.getNumber() === otherNumber ? 1 : 0;
+            }
+
+            // 매개변수로 전달 받은 다른 카드의 색깔과 일치하는지 판단 
+            this.isSameColor = function(otherColor) {
+                return this.getColor() === otherColor ? 1 : 0;
+            }
+
+            // 매개변수로 전달 받은 다른 카드의 모양과 일치하는지 판단 
+            this.isSameShape = function(otherShape) {
+                return this.getShape() === otherShape ? 1 : 0;
+            }
+
+            // 매개변수로 전달 받은 카드 이미지 숫자값과 맞는지 판단 
+            this.isSameCardImageNumber = function(otherCardImageNumber) {
+                return cardImageNumber === otherCardImageNumber ? true : false;
+            }
+
+            // 카드 뒤집기 
+            this.flip = function() {
+                state = !state;
             }
         }
 
+        // 2. 카드 덱 객체, 카드 객체 묶어서 관리, 관련 작업 종합적으로 처리 ✅
         function Deck() {
             // 첫번째 카드의 이미지 숫자
             const FIRTS_CARD_IMAGE_NUMBER = 0;
@@ -677,68 +664,8 @@
             }
         }
 
-        // 1. 카드 객체 : 카드의 상태(앞면, 뒷면)과 카드 숫자 이미지를 저장, 그리고 그와 관련된 작업 묶음 
-        function Card(cardImageNumber = 0, state = false) {
-            var cardImageNumber = cardImageNumber; // 카드의 이미지 숫자 
-            var state = state; // 카드의 상태값(앞면, 뒷면)
 
-            // 카드가 앞면인지 응답
-            this.isFront = function() {
-                return state;
-            }
-
-            // 카드의 숫자 추출 
-            this.getNumber = function() {
-                return cardImageNumber % 13; 
-            }
-
-            // 카드의 모양 추출 
-            this.getShape = function() {
-                return Math.floor(cardImageNumber/13); 
-            }
-
-            // 카드의 색깔 추출  
-            this.getColor = function() {
-                return Math.floor(cardImageNumber/13)%2 === 0 ? "red" : "black";
-            }
-
-            // 카드의 이미지 숫자 반환 
-            this.getCardImageNumber = function() {
-                return cardImageNumber;
-            }
-
-            // 매개변수로 전달 받은 값과 얼마나 맞았는지 계산해서 반환 
-            this.calculateSameCount = function(otherNumber, otherColor, otherShape) {
-                return this.isSameNumber(otherNumber) + this.isSameColor(otherColor) + this.isSameShape(otherShape);
-            }
-
-            // 매개변수로 전달 받은 다른 카드의 숫자와 일치하는지 판단 
-            this.isSameNumber = function(otherNumber) {
-                return this.getNumber() === otherNumber ? 1 : 0;
-            }
-
-            // 매개변수로 전달 받은 다른 카드의 색깔과 일치하는지 판단 
-            this.isSameColor = function(otherColor) {
-                return this.getColor() === otherColor ? 1 : 0;
-            }
-
-            // 매개변수로 전달 받은 다른 카드의 모양과 일치하는지 판단 
-            this.isSameShape = function(otherShape) {
-                return this.getShape() === otherShape ? 1 : 0;
-            }
-
-            // 매개변수로 전달 받은 카드 이미지 숫자값과 맞는지 판단 
-            this.isSameCardImageNumber = function(otherCardImageNumber) {
-                return cardImageNumber === otherCardImageNumber ? true : false;
-            }
-
-            // 카드 뒤집기 
-            this.flip = function() {
-                state = !state;
-            }
-        }
-
-        // 2. 플레이어 객체 : 이름, 점수, 남은 게임 횟수 저장하고 그와 관련된 작업을 묶음 
+        // 3. 플레이어 객체 : 이름, 점수, 남은 게임 횟수 저장하고 그와 관련된 작업을 묶음 ✅
         function Player(name = "anonymous") {
             // 이름 
             var name = name; 
@@ -805,7 +732,7 @@
 
         }
 
-        // 게임 결과 저장 객체 
+        // 4. 게임 결과 저장 객체 ✅
         function GameMessage() {
             // 게임 결과 숫자 정보와 게임 결과 메시지와 매칭시켜 저장하는 맵 
             var map = new Map();
@@ -832,7 +759,82 @@
             }
         }
 
-        // 3. 게임 매니저 객체 : 카드객체와 플레이어 객체를 포함해서, 전체 프로그램의 흐름을 담당
+        // 5. 사용자와 소통하며 사용자를 돕는 객체 ✅
+        function GameHelper() {
+            // 랜덤 아바타 저장 
+            const avators = ["🤹🏻‍♂️", "👨🏻‍🎤", "👩🏻‍🍳", "🦹🏻‍♂️", "🤵🏻‍♂️", "🧝🏻‍♀️", "🦸🏻‍♀️", "🧙🏻", "👰🏻‍♀️"];
+            // 카드 개수 
+            const NUMBER_OF_CARD = 52;
+            
+            // 난수 생성기 
+            const randomGenerator = () => Math.floor(Math.random()*NUMBER_OF_CARD);
+            
+            // 룰 설명 
+            this.explainRule = function() {
+                // 📌 밑에 룰 업데이트 해야함, 게임 룰 변경됨 
+                const ruleMessage = gameMessage.getGameRule();
+                // 룰 메시지 보여주기 
+                alert(ruleMessage);
+            }
+            
+            // 플레이어 생성 
+            this.createPlayer = function(input) {
+                // 이미 모든 플레이어가 생성된 경우 
+                if (firstPlayer !== null && secondPlayer !== null ) {
+                    alert("이미 모든 플레이어가 생성되었습니다.💥");
+                    gameMessage.createAllMessage();
+                    return;
+                }
+            
+                // 사용자가 입력한 닉네임 가져오기, 없으면 "익명플레이어"로 설정 
+                const userName = input.value ? input.value : "익명플레이어";
+                // 랜덤 아바타 뽑기
+                const avator = this.selectRandomAvator();
+            
+                // 첫 번째 플레이어가 없는 경우, 첫 번째 플레이어로 등록 
+                if (firstPlayer === null) {
+                    firstPlayer = new Player(avator+userName);
+                    alert(`첫번째 플레이어 "${firstPlayer.getName()}" 가 생성되었습니다.`);
+                }
+                // 두 번째 플레이어가 없는 경우, 두 번째 플레이어로 등록
+                else if (secondPlayer === null) {
+                    secondPlayer = new Player(avator+userName);
+                    alert(`두번째 플레이어 "${secondPlayer.getName()}" 가 생성되었습니다.`);
+                }
+            
+                // 게임 진행자가 플레이어 영역 업데이트 
+                gameModerator.updateAllPlayerTag();
+            }
+            
+            // 랜덤 아바타를 뽑음 
+            this.selectRandomAvator = function() {
+                // 아바타 배열 섞기 
+                this.suffleAllAvator();
+                return avators[0];
+            }
+            
+            // 아바타 배열 섞기 
+            this.suffleAllAvator = function() {
+                for (let i=0; i<100; i++) {
+                    avators.sort(() => Math.random() - 0.5);
+                }
+            }
+            
+            // 플레이어에게 힌트 보여주기 
+            this.giveHint = function() {
+                // 현재 플레이어가 설정되지 않은 경우 
+                if (currentPlayer === null) {
+                    alert("현재 플레이어가 설정되지 않았거나 플레이어를 생성하지 않았습니다. 다시 확인하고 플레이 해주세요.💥");
+                    return;
+                }
+                // 덱에서 힌트 카드 보여주기 
+                deck.showCardForHint();
+                // 게임 진행자가 플레이어 영역 업데이트하기 
+                gameModerator.updateAllPlayerTag();
+            }
+        } 
+
+        // 6.. 게임 진행자 객체 ✅
         function GameModerator() {
 
             // 현재 플레이어가 선택한 카드를 저장 
@@ -1171,7 +1173,6 @@
                 currentPlayer = null;
             }
         }
-
     </script>
 </body>
 </html>
