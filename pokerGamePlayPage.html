@@ -1012,41 +1012,30 @@
                     return; 
                 }
 
-                // 첫번째 카드와 힌트 카드 비교, 번째 카드와 힌트 카드 비교 
-                let sameCountForFirstSelectedCardWithHint = 0;
-                let sameCountForSecondSelectecCardWithHint = 0;
-                
-                // 힌트 카드와 이전에 선택한 카드 먼저 비교 
-                for (let i=0; i<deck.getLengthOfCardForHint(); i++) {
-                    // 힌트 카드 하나씩 참조
-                    const cardForHint = deck.indexOfCardForHint(i);
-                    // 현재 플레이어가 선택한 카드 하나씩 참조 
-                    for (let j=0; j<deck.getLengthOfCurrentPlayerSelectedCard(); j++) {
-                        const selectedCard = deck.indexOfCard(j);
-                        // 서로 일치하는 갯수 카운트 
-                        const amount = selectedCard.calculateSameCount(cardForHint.getNumber(), cardForHint.getColor(), cardForHint.getShape());
-                        
-                        // 첫 번째 카드인 경우 "첫 번째 카드와 힌트 카드 비교"에 기록
-                        if (j === 0) {
-                            sameCountForFirstSelectedCardWithHint += amount;
-                        } 
-                        // 두 번째 카드인 경우 "두 번째 카드와 힌트 카드 비교"에 기록
-                        else {
-                            sameCountForSecondSelectecCardWithHint += amount;
-                        }
-
-                        // 스코어 업데이트
-                        currentPlayer.addScore(amount);
-                        // 태그 업데이트 
-                        this.updateAllPlayerTag();
-                    }
-                }
 
                 // 두개의 카드를 선택했으면 서로 비교 
                 if (deck.isCurrentPlayerSelectedTwoCard()) {
+                    // 첫번째 카드와 힌트 카드 비교, 번째 카드와 힌트 카드 비교 
+                    let sameCountForFirstSelectedCardWithHint = 0;
+                    let sameCountForSecondSelectecCardWithHint = 0;
+                    
+
+                    for (let i=0; i<deck.getLengthOfCurrentPlayerSelectedCard(); i++) {
+                        let amount = 0;
+                        for (let j=0; j<deck.getLengthOfCardForHint(); j++) {
+                            const selectedCard = deck.indexOfCurrentPlayerSelectedCard(i);
+                            const hintCard = deck.indexOfCardForHint(j);
+                            amount += selectedCard.calculateSameCount(hintCard.getNumber(), hintCard.getColor(), hintCard.getShape());
+                        }
+
+                        if (i === 0) sameCountForFirstSelectedCardWithHint += amount;
+                        else sameCountForSecondSelectecCardWithHint += amount;
+                    }
+
                     // 두개의 카드 서로 일치하는 갯수 카운트 및 뒤집기 
                     const amount = this.getSameAmountBetweenTwoSelectedCard(sameCountForFirstSelectedCardWithHint, sameCountForSecondSelectecCardWithHint);
-                    // 스코어 업데이트 
+                    currentPlayer.addScore(sameCountForFirstSelectedCardWithHint);
+                    currentPlayer.addScore(sameCountForSecondSelectecCardWithHint);
                     currentPlayer.addScore(amount);
                     // 판수 업데이트 
                     currentPlayer.decreaseCount();
